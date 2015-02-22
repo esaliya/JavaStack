@@ -1,0 +1,59 @@
+<project default="build-service">
+
+    <property name="axis2.home" value="C:\apache-tomcat-5.5.28\webapps\axis2\"/>
+    <property name="temp.dir" value="temp"/>
+    <property name="classes" value="${temp.dir}/classes"/>
+    <property name="src" value="src/main/java"/>
+    <property name="resources" value="src/main/resources"/>
+    <property name="services" value="${temp.dir}/services/"/>
+
+    <path id="service.class.path">
+        <pathelement path="${java.class.path}"/>
+        <fileset dir="${axis2.home}/WEB-INF/">
+            <include name="lib/*.jar"/>
+        </fileset>
+        <fileset dir="${resources}/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="init" depends="clean">
+        <mkdir dir="${temp.dir}"/>
+        <mkdir dir="${classes}"/>
+        <mkdir dir="${services}"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${temp.dir}"/>
+    </target>
+
+    <target name="compile-all" depends="init">
+        <javac debug="on" destdir="${classes}">
+            <src path="${src}"/>
+            <classpath refid="service.class.path"/>
+        </javac>
+    </target>
+
+    <target name="build-service" depends="compile-all">
+        <property name="SS.dir" value="${services}/StatService"/>
+        <mkdir dir="${SS.dir}"/>
+        <mkdir dir="$(SS.dir}/lib"/>
+        <mkdir dir="${SS.dir}/META-INF"/>
+        <copy file="${resources}/META-INF/services.xml" tofile="${SS.dir}/META-INF/services.xml"/>
+        <copy toDir="${SS.dir}">
+            <fileset dir="${classes}">
+                <include name="**/*.class"/>
+            </fileset>
+        </copy>
+         <copy toDir="${SS.dir}/lib">
+             <fileset dir="${resources}/lib">
+                 <include name="*.jar"/>
+             </fileset>
+         </copy>
+
+        <jar destfile="${axis2.home}/WEB-INF/services/StatService.aar">
+            <fileset dir="${SS.dir}"/>
+        </jar>
+    </target>
+
+</project>

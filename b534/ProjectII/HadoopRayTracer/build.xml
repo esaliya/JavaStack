@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project HadoopRayTracer">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="C:/Users/Administrator/workspace/HadoopRayTracer/HadoopRayTracer.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="edu.indiana.cs.b534.HadoopRayTracer"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="C:/Users/Administrator/workspace/HadoopRayTracer/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Administrator/workspace/HadoopRayTracer/lib/log4j-1.2.15.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Administrator/workspace/HadoopRayTracer/lib/hadoop-0.20.2-core.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Administrator/workspace/HadoopRayTracer/lib/Ray-Tracer-API-B534-V1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Administrator/workspace/HadoopRayTracer/lib/commons-logging-1.1.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Users/Administrator/workspace/HadoopRayTracer/lib/rings.jar"/>
+        </jar>
+    </target>
+</project>

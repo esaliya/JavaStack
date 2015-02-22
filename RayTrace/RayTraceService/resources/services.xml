@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was auto-generated from WSDL -->
+<!--
+		by the Apache Axis2 version: 1.5.1 Built on : Oct 19, 2009 (10:59:00
+		EDT)
+	-->
+<serviceGroup>
+    <service name="RayTracer">
+        <messageReceivers>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="edu.indiana.cs.b534.RayTracerMessageReceiverInOut"/>
+        </messageReceivers>
+        <parameter name="ServiceClass">edu.indiana.cs.b534.RayTracerSkeleton</parameter>
+        <parameter name="useOriginalwsdl">true</parameter>
+        <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        <operation name="rayTrace" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://b534.cs.indiana.edu">
+            <actionMapping>urn:rayTrace</actionMapping>
+            <outputActionMapping>urn:rayTraceResponse</outputActionMapping>
+        </operation>
+        <operation name="rayTraceMovie" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://b534.cs.indiana.edu">
+            <actionMapping>urn:rayTraceMovie</actionMapping>
+            <outputActionMapping>urn:rayTraceMovieResponse</outputActionMapping>
+        </operation>
+        <operation name="rayTraceSubView" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://b534.cs.indiana.edu">
+            <actionMapping>urn:rayTraceSubView</actionMapping>
+            <outputActionMapping>urn:rayTraceSubViewResponse</outputActionMapping>
+        </operation>
+        <operation name="rayTraceURL" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://b534.cs.indiana.edu">
+            <actionMapping>urn:rayTraceURL</actionMapping>
+            <outputActionMapping>urn:rayTraceURLResponse</outputActionMapping>
+        </operation>
+    </service>
+</serviceGroup>

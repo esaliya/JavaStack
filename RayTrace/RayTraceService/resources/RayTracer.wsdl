@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://b534.cs.indiana.edu" xmlns:ns="http://b534.cs.indiana.edu" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/">
+  <wsdl:types>
+    <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://b534.cs.indiana.edu" xmlns:ax29="http://awt.java/xsd">
+            <xs:element name="rayTraceURL">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="sceneURL" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="camera" nillable="true" type="ns:CameraSetup"/>
+                        <xs:element minOccurs="0" name="imageWidth" type="xs:int"/>
+                        <xs:element minOccurs="0" name="imageHeight" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rayTraceURLResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="imageURL" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rayTraceSubView">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="sceneURL" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="camera" nillable="true" type="ns:CameraSetup"/>
+                        <xs:element minOccurs="0" name="imageWidth" type="xs:int"/>
+                        <xs:element minOccurs="0" name="imageHeight" type="xs:int"/>
+                        <xs:element minOccurs="0" name="subView" nillable="true" type="ns:Rectangle"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rayTraceSubViewResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="imageURL" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rayTraceMovie">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="sceneURL" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="camera" nillable="true" type="ns:CameraSetup"/>
+                        <xs:element minOccurs="0" name="imageWidth" type="xs:int"/>
+                        <xs:element minOccurs="0" name="imageHeight" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rayTraceMovieResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="ImageURL" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rayTrace">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="sceneURL" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="camera" nillable="true" type="ns:CameraSetup"/>
+                        <xs:element minOccurs="0" name="imageWidth" type="xs:int"/>
+                        <xs:element minOccurs="0" name="imageHeight" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rayTraceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ns:ArrayOfRGBColor"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="ArrayOfRGBColor">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="array" nillable="true" type="ns:RGBColor"/>
+                </xs:sequence>
+            </xs:complexType>
+            
+            
+            <xs:complexType name="Rectangle">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="maxX" type="xs:double"/>
+					<xs:element minOccurs="0" name="maxY" type="xs:double"/>
+					<xs:element minOccurs="0" name="minX" type="xs:double"/>
+					<xs:element minOccurs="0" name="minY" type="xs:double"/>
+				</xs:sequence>
+			</xs:complexType>
+
+			<xs:complexType name="RGBColor">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="blue" nillable="true" type="xs:double"/>
+					<xs:element minOccurs="0" name="green" nillable="true" type="xs:double"/>
+					<xs:element minOccurs="0" name="red" nillable="true" type="xs:double"/>
+				</xs:sequence>
+			</xs:complexType>
+
+			<xs:complexType name="CameraSetup">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="direction" nillable="true" type="ns:Point3D"/>
+					<xs:element minOccurs="0" name="location" nillable="true" type="ns:Point3D"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Point3D">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="x" type="xs:double"/>
+					<xs:element minOccurs="0" name="y" type="xs:double"/>
+					<xs:element minOccurs="0" name="z" type="xs:double"/>
+				</xs:sequence>
+			</xs:complexType>
+            
+        </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="rayTraceURLResponse">
+    <wsdl:part name="parameters" element="ns:rayTraceURLResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="rayTraceURLRequest">
+    <wsdl:part name="parameters" element="ns:rayTraceURL">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="rayTraceMovieRequest">
+    <wsdl:part name="parameters" element="ns:rayTraceMovie">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="rayTraceSubViewResponse">
+    <wsdl:part name="parameters" element="ns:rayTraceSubViewResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="rayTraceResponse">
+    <wsdl:part name="parameters" element="ns:rayTraceResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="rayTraceSubViewRequest">
+    <wsdl:part name="parameters" element="ns:rayTraceSubView">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="rayTraceRequest">
+    <wsdl:part name="parameters" element="ns:rayTrace">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="rayTraceMovieResponse">
+    <wsdl:part name="parameters" element="ns:rayTraceMovieResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="RayTracerPortType">
+    <wsdl:operation name="rayTraceURL">
+      <wsdl:input message="ns:rayTraceURLRequest" wsaw:Action="urn:rayTraceURL">
+    </wsdl:input>
+      <wsdl:output message="ns:rayTraceURLResponse" wsaw:Action="urn:rayTraceURLResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="rayTrace">
+      <wsdl:input message="ns:rayTraceRequest" wsaw:Action="urn:rayTrace">
+    </wsdl:input>
+      <wsdl:output message="ns:rayTraceResponse" wsaw:Action="urn:rayTraceResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="rayTraceMovie">
+      <wsdl:input message="ns:rayTraceMovieRequest" wsaw:Action="urn:rayTraceMovie">
+    </wsdl:input>
+      <wsdl:output message="ns:rayTraceMovieResponse" wsaw:Action="urn:rayTraceMovieResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="rayTraceSubView">
+      <wsdl:input message="ns:rayTraceSubViewRequest" wsaw:Action="urn:rayTraceSubView">
+    </wsdl:input>
+      <wsdl:output message="ns:rayTraceSubViewResponse" wsaw:Action="urn:rayTraceSubViewResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="RayTracerSoap11Binding" type="ns:RayTracerPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="rayTraceURL">
+      <soap:operation soapAction="urn:rayTraceURL" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="rayTrace">
+      <soap:operation soapAction="urn:rayTrace" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="rayTraceMovie">
+      <soap:operation soapAction="urn:rayTraceMovie" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="rayTraceSubView">
+      <soap:operation soapAction="urn:rayTraceSubView" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="RayTracer">
+    <wsdl:port name="RayTracerHttpSoap11Endpoint" binding="ns:RayTracerSoap11Binding">
+      <soap:address location="http://localhost:8080/axis2/services/RayTracer"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

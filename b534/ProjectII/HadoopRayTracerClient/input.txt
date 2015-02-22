@@ -1,0 +1,4 @@
+minX=0;maxX=99;minY=0;maxY=49;locationX=0;locationY=-1;locationZ=8;directionX=0;directionY=0;directionZ=-1;imageWidth=200;imageHeight=200;
+minX=0;maxX=99;minY=50;maxY=99;locationX=0;locationY=-1;locationZ=8;directionX=0;directionY=0;directionZ=-1;imageWidth=200;imageHeight=200;
+minX=0;maxX=99;minY=100;maxY=149;locationX=0;locationY=-1;locationZ=8;directionX=0;directionY=0;directionZ=-1;imageWidth=200;imageHeight=200;
+minX=0;maxX=99;minY=150;maxY=199;locationX=0;locationY=-1;locationZ=8;directionX=0;directionY=0;directionZ=-1;imageWidth=200;imageHeight=200;

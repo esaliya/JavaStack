@@ -1,0 +1,6 @@
+AKIAJUOROXDY52FF6CAA
+PMgnUEvJU4wXue/o52BUhr1FqFmIYaY0B/uIcpn5
+s3n://b534.hui/raytracer/HadoopRayTracer.jar
+s3n://b534.hui/raytracer/input/
+s3n://b534.hui/raytracer/output/
+s3n://b534.hui/raytracer/log/

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0_17" class="java.beans.XMLDecoder"> 
+ <object class="com.jformdesigner.model.FormModel"> 
+  <void property="contentType"> 
+   <string>form/swing</string> 
+  </void> 
+  <void property="root"> 
+   <object class="com.jformdesigner.model.FormRoot"> 
+    <void method="add"> 
+     <object class="com.jformdesigner.model.FormWindow"> 
+      <string>javax.swing.JFrame</string> 
+      <object class="com.jformdesigner.model.FormLayoutManager"> 
+       <class>org.jdesktop.layout.GroupLayout</class> 
+       <void method="setProperty"> 
+        <string>$horizontalGroup</string> 
+        <string>par l {seq l {space :::p, par t:::p {comp scrollPane1::l:::x:1, seq l {comp textField1:::p:618:p, space :::p, comp upBtn:::p:32:p, space :::p, comp addBtn:::p:32:p, space :::p, comp delBtn:::p:32:p, space :::p, comp button2:::p:32:p}}, space ::106:x}}</string> 
+       </void> 
+       <void method="setProperty"> 
+        <string>$verticalGroup</string> 
+        <string>par l {seq {space :::p, par t:::p {comp button2::t::22:x:1, comp delBtn::t::22:x:1, comp addBtn::t::22:x:1, comp upBtn::t::22:x:1, comp textField1::t:::x:1}, space :::p, comp scrollPane1:::p:471:p, space ::58:x}}</string> 
+       </void> 
+      </object> 
+      <void method="setProperty"> 
+       <string>iconImage</string> 
+       <object class="com.jformdesigner.model.FormObject" field="NULL_VALUE"/> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>javax.swing.JTextField</string> 
+        <void method="setProperty"> 
+         <string>text</string> 
+         <string>/</string> 
+        </void> 
+        <void property="name"> 
+         <string>textField1</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>javax.swing.JButton</string> 
+        <void method="setProperty"> 
+         <string>icon</string> 
+         <object class="com.jformdesigner.model.SwingIcon"> 
+          <int>1</int> 
+          <string>C:\sali\pti\salsa-svn\Saliya\iu-projects\DirectoryExplorer\src\icons\up.png</string> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>upBtn</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>javax.swing.JButton</string> 
+        <void method="setProperty"> 
+         <string>icon</string> 
+         <object class="com.jformdesigner.model.SwingIcon"> 
+          <int>1</int> 
+          <string>C:\sali\pti\salsa-svn\Saliya\iu-projects\DirectoryExplorer\src\icons\add.png</string> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>addBtn</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>javax.swing.JButton</string> 
+        <void method="setProperty"> 
+         <string>icon</string> 
+         <object class="com.jformdesigner.model.SwingIcon"> 
+          <int>1</int> 
+          <string>C:\sali\pti\salsa-svn\Saliya\iu-projects\DirectoryExplorer\src\icons\delete.png</string> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>delBtn</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>javax.swing.JButton</string> 
+        <void method="setProperty"> 
+         <string>icon</string> 
+         <object class="com.jformdesigner.model.SwingIcon"> 
+          <int>1</int> 
+          <string>C:\sali\pti\salsa-svn\Saliya\iu-projects\DirectoryExplorer\src\icons\refresh.png</string> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>button2</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormContainer"> 
+        <string>javax.swing.JScrollPane</string> 
+        <object class="com.jformdesigner.model.FormLayoutManager"> 
+         <class>javax.swing.JScrollPane</class> 
+        </object> 
+        <void property="name"> 
+         <string>scrollPane1</string> 
+        </void> 
+        <void method="add"> 
+         <object class="com.jformdesigner.model.FormComponent"> 
+          <string>javax.swing.JList</string> 
+          <void property="name"> 
+           <string>list1</string> 
+          </void> 
+         </object> 
+        </void> 
+       </object> 
+      </void> 
+      <void property="name"> 
+       <string>this</string> 
+      </void> 
+     </object> 
+     <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+      <null/> 
+      <void method="setProperty"> 
+       <string>location</string> 
+       <object class="java.awt.Point"> 
+        <int>25</int> 
+        <int>20</int> 
+       </object> 
+      </void> 
+      <void method="setProperty"> 
+       <string>size</string> 
+       <object class="java.awt.Dimension"> 
+        <int>890</int> 
+        <int>590</int> 
+       </object> 
+      </void> 
+     </object> 
+    </void> 
+   </object> 
+  </void> 
+ </object> 
+</java> 

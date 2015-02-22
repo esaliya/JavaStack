@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="jar">
+	<property environment="env" />
+	<property name="project.base.dir" value="." />
+	<property name="maven.class.path" value="" />
+	<property name="name" value="RayTracer" />
+	<property name="src" value="${project.base.dir}/src" />
+	<property name="test" value="${project.base.dir}/test" />
+	<property name="build" value="${project.base.dir}/build" />
+	<property name="classes" value="${build}/classes" />
+	<property name="lib" value="${build}/lib" />
+	<property name="resources" value="${project.base.dir}/resources" />
+	<property value="" name="jars.ok" />
+	<path id="project.class.path">
+		<pathelement path="${java.class.path}" />
+		<pathelement path="${maven.class.path}" />
+		<fileset dir="${project.base.dir}/..">
+			<include name="lib/*.jar" />
+		</fileset>
+	</path>
+	<target name="init">
+		<mkdir dir="${build}" />
+		<mkdir dir="${classes}" />
+		<mkdir dir="${lib}" />
+	</target>
+	<target name="compile.src" depends="init">
+        <javac debug="on"
+               fork="true" destdir="${classes}" srcdir="${src}">
+            <classpath refid="project.class.path"/>
+        </javac>
+	</target>
+
+    <target name="jar" depends="compile.src">
+        <unzip src="${project.base.dir}/../lib/rings.jar" dest="${classes}"/>
+        <unzip src="${project.base.dir}/../lib/Ray-Tracer-API-B534-V1.jar" dest="${classes}"/>
+        <jar destfile="${lib}/rt.jar"
+             basedir="${classes}"
+             includes="**/*.class"
+             manifest="${resources}/MANIFEST.MF"
+             />
+      </target>
+
+	<target name="clean">
+		<delete dir="${build}" />
+	</target>
+</project>

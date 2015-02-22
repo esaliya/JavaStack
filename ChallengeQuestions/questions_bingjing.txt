@@ -1,0 +1,54 @@
+
+
+
+
+1. Arrays and Strings
+Design an algorithm and write code to remove the duplicate characters in a string without using any additional buffer
+
+2.  Linked List
+Implement an algorithm to find the nth to last element of a singly linked list.
+A complicated one is to find the beginning of a loop assuming there's only one loop
+
+3. Stacks and Queues
+(1) Write a program to sort a stack in ascending order.
+    You should not make any assumptions about how the stack is implemented.
+    The following are the only functions that should be used to write this program: push | pop | peek | isEmpty.
+
+
+(2) Implement a MyQueue class which implements a queue using two stacks.
+
+
+4. Trees and Graphs
+Write an algorithm to find the ‘next’ node (i.e., in-order successor) of a given node in a binary search tree where each node has a link to its parent.
+
+
+5. Bit Manipulation
+Switch two integers
+
+6. Recursion
+Implement an algorithm to print all valid (e.g., properly opened and closed) combinations of n-pairs of parentheses.
+EXAMPLE:
+input: 3 (e.g., 3 pairs of parentheses)
+output: ()()(), ()(()), (())(), ((()))
+
+(()())
+
+7. Sorting and Searching
+Given a matrix in which each row and each column is sorted, write a method to find an element in it.
+
+
+8. Mathematical
+Design an algorithm to find the kth number such that the only prime factors are 3, 5, and 7.
+
+
+
+hard questions:
+1. Write a method which finds the maximum of two numbers. You should not use if-else or any other comparison operator.
+    EXAMPLE Input: 5, 10 Output: 10
+
+2. Write a method to randomly generate a set of m integers from an array of size n (you don't know n in advance).
+Each element must have equal probability of being chosen.
+
+3. You have a large text file containing words. Given any two words, find the shortest distance (in terms of number of words) between them in the file. Can you make the searching operation in O(1) time? What about the space complexity for your solution?
+
+4. Write a method to count the number of 2s between 0 and n.

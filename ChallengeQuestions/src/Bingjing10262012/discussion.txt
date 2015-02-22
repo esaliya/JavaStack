@@ -1,0 +1,7 @@
+1.) see code :D
+
+2.) Keep two pointers with N elements apart
+
+7.) Idea 1: start from top right. go left or down accordingly
+    Idea 2: do binary search column and row wise. remove the top left and bottom right fractions.
+            recursively do it for top right and bottom left portions

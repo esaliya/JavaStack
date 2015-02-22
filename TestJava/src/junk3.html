@@ -1,0 +1,526 @@
+<html>
+<body>
+We present the comparisons of Smith-Waterman new normalized score versus different distance types with
+varying denominator cuts. Note given an <i>N x N </i>distance matrix we consider only the top half for
+these computations since the matrices are symmetric.
+<br/><br/>
+<span class="Apple-style-span" style="font-size: large;"><a name="index">Index</a></span>
+<br/><br/>
+<ul>
+    <li>
+        <span class="Apple-style-span" style="font-size: large;">
+            New Normalized Smith-Waterman Score Vs Old Normalized Smith-Waterman Score Distance</span>
+        <br/>
+        <ul>
+            <li>
+                Denominator Cut 0.1
+            </li>
+            <table>
+                <tr>
+                    <td><a href="#1.1.1">Full sample of 95672 points</a></td>
+                    <td>|</td>
+                    <td><a href="#1.1.2">Selected intra cluster distances</a></td>
+                    <td>|</td>
+                    <td><a href="#1.1.3">Selected inter cluster distances</a></td>
+                </tr>
+            </table>
+            <li>
+                Denominator Cut 0.25
+            </li>
+            <table>
+                <tr>
+                    <td><a href="#1.2.1">Full sample of 95672 points</a></td>
+                    <td>|</td>
+                    <td><a href="#1.2.2">Selected intra cluster distances</a></td>
+                    <td>|</td>
+                    <td><a href="#1.2.3">Selected inter cluster distances</a></td>
+                </tr>
+            </table>
+            <li>
+                Denominator Cut 0.5
+            </li>
+            <table>
+                <tr>
+                    <td><a href="#1.3.1">Full sample of 95672 points</a></td>
+                    <td>|</td>
+                    <td><a href="#1.3.2">Selected intra cluster distances</a></td>
+                    <td>|</td>
+                    <td><a href="#1.3.3">Selected inter cluster distances</a></td>
+                </tr>
+            </table>
+            <li>
+                Denominator Cut 0.75
+            </li>
+            <table>
+                <tr>
+                    <td><a href="#1.4.1">Full sample of 95672 points</a></td>
+                    <td>|</td>
+                    <td><a href="#1.4.2">Selected intra cluster distances</a></td>
+                    <td>|</td>
+                    <td><a href="#1.4.3">Selected inter cluster distances</a></td>
+                </tr>
+            </table>
+        </ul>
+    </li>
+    <br/><br/>
+    <li>
+        <span class="Apple-style-span" style="font-size: large;">
+            New Normalized Smith-Waterman Score Vs Normalized Blast BitScore Distance</span>
+        <br/>
+        <ul>
+            <li>
+                Denominator Cut 0.1
+            </li>
+            <table>
+                <tr>
+                    <td><a href="#2.1.1">Full sample of 95672 points</a></td>
+                    <td>|</td>
+                    <td><a href="#2.1.2">Selected intra cluster distances</a></td>
+                    <td>|</td>
+                    <td><a href="#2.1.3">Selected inter cluster distances</a></td>
+                </tr>
+            </table>
+            <li>
+                Denominator Cut 0.25
+            </li>
+            <table>
+                <tr>
+                    <td><a href="#2.2.1">Full sample of 95672 points</a></td>
+                    <td>|</td>
+                    <td><a href="#2.2.2">Selected intra cluster distances</a></td>
+                    <td>|</td>
+                    <td><a href="#2.2.3">Selected inter cluster distances</a></td>
+                </tr>
+            </table>
+            <li>
+                Denominator Cut 0.5
+            </li>
+            <table>
+                <tr>
+                    <td><a href="#2.3.1">Full sample of 95672 points</a></td>
+                    <td>|</td>
+                    <td><a href="#2.3.2">Selected intra cluster distances</a></td>
+                    <td>|</td>
+                    <td><a href="#2.3.3">Selected inter cluster distances</a></td>
+                </tr>
+            </table>
+            <li>
+                Denominator Cut 0.75
+            </li>
+            <table>
+                <tr>
+                    <td><a href="#2.4.1">Full sample of 95672 points</a></td>
+                    <td>|</td>
+                    <td><a href="#2.4.2">Selected intra cluster distances</a></td>
+                    <td>|</td>
+                    <td><a href="#2.4.3">Selected inter cluster distances</a></td>
+                </tr>
+            </table>
+        </ul>
+    </li>
+    <br/><br/>
+    <li>
+        <span class="Apple-style-span" style="font-size: large;">
+            New Normalized Smith-Waterman Score Vs Needleman-Wunsch PID Distance</span>
+        <br/>
+        <ul>
+            <li>
+                Denominator Cut 0.1
+            </li>
+            <table>
+                <tr>
+                    <td><a href="#3.1.1">Full sample of 95672 points</a></td>
+                    <td>|</td>
+                    <td><a href="#3.1.2">Selected intra cluster distances</a></td>
+                    <td>|</td>
+                    <td><a href="#3.1.3">Selected inter cluster distances</a></td>
+                </tr>
+            </table>
+            <li>
+                Denominator Cut 0.25
+            </li>
+            <table>
+                <tr>
+                    <td><a href="#3.2.1">Full sample of 95672 points</a></td>
+                    <td>|</td>
+                    <td><a href="#3.2.2">Selected intra cluster distances</a></td>
+                    <td>|</td>
+                    <td><a href="#3.2.3">Selected inter cluster distances</a></td>
+                </tr>
+            </table>
+            <li>
+                Denominator Cut 0.5
+            </li>
+            <table>
+                <tr>
+                    <td><a href="#3.3.1">Full sample of 95672 points</a></td>
+                    <td>|</td>
+                    <td><a href="#3.3.2">Selected intra cluster distances</a></td>
+                    <td>|</td>
+                    <td><a href="#3.3.3">Selected inter cluster distances</a></td>
+                </tr>
+            </table>
+            <li>
+                Denominator Cut 0.75
+            </li>
+            <table>
+                <tr>
+                    <td><a href="#3.4.1">Full sample of 95672 points</a></td>
+                    <td>|</td>
+                    <td><a href="#3.4.2">Selected intra cluster distances</a></td>
+                    <td>|</td>
+                    <td><a href="#3.4.3">Selected inter cluster distances</a></td>
+                </tr>
+            </table>
+        </ul>
+    </li>
+</ul>
+
+<br/><br/><br/><br/><br/>
+
+<ul>
+
+<li><b><span class="Apple-style-span" style="font-size: x-large;">
+        New Normalized Smith-Waterman Score Vs Old Normalized Smith-Waterman Score Distance</span></b>
+    [<a href="#index">Top</a>]
+</li>
+<br/>
+<ul>
+    <li><i><b><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">Denominator Cut 0.1</span></b></i></li>
+    <table>
+        <tr>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+        <a name="1.1.1">Full sample of 95672 points</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+        <a name="1.1.2">Selected intra cluster distances</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+        <a name="1.1.3">Selected inter cluster distances</a></span></i></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182856?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182856?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182740?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182740?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182856?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182856?directDownload=true" width="600"/></a>
+            </td>
+        </tr>
+    </table>
+    <br/><br/>
+    <li><i><b><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">Denominator Cut 0.25</span></b></i></li>
+    <table>
+        <tr>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+        <a name="1.2.1">Full sample of 95672 points</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+        <a name="1.2.2">Selected intra cluster distances</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+        <a name="1.2.3">Selected inter cluster distances</a></span></i></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182886?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182886?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182878?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182878?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182873?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182873?directDownload=true" width="600"/></a>
+            </td>
+        </tr>
+    </table>
+    <br/><br/>
+    <li><i><b><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">Denominator Cut 0.5</span></b></i></li>
+    <table>
+        <tr>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+        <a name="1.3.1">Full sample of 95672 points</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+        <a name="1.3.2">Selected intra cluster distances</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+        <a name="1.3.3">Selected inter cluster distances</a></span></i></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182825?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182825?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182815?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182815?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182811?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182811?directDownload=true" width="600"/></a>
+            </td>
+        </tr>
+    </table>
+    <br/><br/>
+    <li><i><b><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">Denominator Cut 0.75</span></b></i></li>
+    <table>
+        <tr>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+        <a name="1.4.1">Full sample of 95672 points</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+        <a name="1.4.2">Selected intra cluster distances</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+        <a name="1.4.3">Selected inter cluster distances</a></span></i></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182962?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182962?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182953?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182953?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182967?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182967?directDownload=true" width="600"/></a>
+            </td>
+        </tr>
+    </table>
+    <br/><br/>
+</ul>
+
+<br/><br/><br/><br/><br/>
+
+<li><b><span class="Apple-style-span" style="font-size: x-large;">
+        New Normalized Smith-Waterman Score Vs Normalized Blast BitScore Distance</span></b>
+    [<a href="#index">Top</a>]
+</li>
+<br/>
+<ul>
+    <li><i><b><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">Denominator Cut 0.1</span></b></i></li>
+    <table>
+        <tr>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="2.1.1">Full sample of 95672 points</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="2.1.2">Selected intra cluster distances</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="2.1.3">Selected inter cluster distances</a></span></i></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182115?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182115?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182106?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182106?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182101?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182101?directDownload=true" width="600"/></a>
+            </td>
+        </tr>
+    </table>
+    <br/><br/>
+    <li><i><b><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">Denominator Cut 0.25</span></b></i></li>
+    <table>
+        <tr>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="2.2.1">Full sample of 95672 points</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="2.2.2">Selected intra cluster distances</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="2.2.3">Selected inter cluster distances</a></span></i></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182124?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182124?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182114?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182114?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182128?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182128?directDownload=true" width="600"/></a>
+            </td>
+        </tr>
+    </table>
+    <br/><br/>
+    <li><i><b><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">Denominator Cut 0.5</span></b></i></li>
+    <table>
+        <tr>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="2.3.1">Full sample of 95672 points</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="2.3.2">Selected intra cluster distances</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="2.3.3">Selected inter cluster distances</a></span></i></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_2739277_062009?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_2739277_062009?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_2739277_062093?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_2739277_062093?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_2739277_062006?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_2739277_062006?directDownload=true" width="600"/></a>
+            </td>
+        </tr>
+    </table>
+    <br/><br/>
+    <li><i><b><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">Denominator Cut 0.75</span></b></i></li>
+    <table>
+        <tr>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="2.4.1">Full sample of 95672 points</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="2.4.2">Selected intra cluster distances</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="2.4.3">Selected inter cluster distances</a></span></i></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182265?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182265?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182258?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182258?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182252?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182252?directDownload=true" width="600"/></a>
+            </td>
+        </tr>
+    </table>
+    <br/><br/>
+</ul>
+
+<br/><br/><br/><br/><br/>
+
+<li><b><span class="Apple-style-span" style="font-size: x-large;">
+        New Normalized Smith-Waterman Score Vs Needleman-Wunsch PID Distance</span></b>
+    [<a href="#index">Top</a>]
+</li>
+<br/>
+<ul>
+    <li><i><b><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">Denominator Cut 0.1</span></b></i></li>
+    <table>
+        <tr>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="3.1.1">Full sample of 95672 points</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="3.1.2">Selected intra cluster distances</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="3.1.3">Selected inter cluster distances</a></span></i></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182946?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182946?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182935?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182935?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182932?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182932?directDownload=true" width="600"/></a>
+            </td>
+        </tr>
+    </table>
+    <br/><br/>
+    <li><i><b><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">Denominator Cut 0.25</span></b></i></li>
+    <table>
+        <tr>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="3.2.1">Full sample of 95672 points</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="3.2.2">Selected intra cluster distances</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="3.2.3">Selected inter cluster distances</a></span></i></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182072?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182072?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182061?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182061?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182076?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182076?directDownload=true" width="600"/></a>
+            </td>
+        </tr>
+    </table>
+    <br/><br/>
+    <li><i><b><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">Denominator Cut 0.5</span></b></i></li>
+    <table>
+        <tr>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="3.3.1">Full sample of 95672 points</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="3.3.2">Selected intra cluster distances</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="3.3.3">Selected inter cluster distances</a></span></i></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182021?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182021?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182014?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182014?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182027?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182027?directDownload=true" width="600"/></a>
+            </td>
+        </tr>
+    </table>
+    <br/><br/>
+    <li><i><b><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">Denominator Cut 0.75</span></b></i></li>
+    <table>
+        <tr>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="3.4.1">Full sample of 95672 points</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="3.4.2">Selected intra cluster distances</a></span></i></td>
+            <td align="center"><i><span class="Apple-style-span" style="font-family: inherit; font-size: x-large;">
+            <a name="3.4.3">Selected inter cluster distances</a></span></i></td>
+        </tr>
+        <tr>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182048?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182048?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182037?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182037?directDownload=true" width="600"/></a>
+            </td>
+            <td align="center">
+                <a href="https://www.sugarsync.com/pf/D6858752_0743775_182033?directDownload=true">
+                    <img src="https://www.sugarsync.com/pf/D6858752_0743775_182033?directDownload=true" width="600"/></a>
+            </td>
+        </tr>
+    </table>
+    <br/><br/>
+</ul>
+</ul>
+
+
+</body>
+</html>

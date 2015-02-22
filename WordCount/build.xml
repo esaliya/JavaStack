@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="jar">
+    <property environment="env" />
+
+    <!--Change yourID portion to actual 8 letter IU network ID-->
+    <property name="name" value="yourID_asst1" />
+
+    <property name="project.base.dir" value="." />
+	<property name="src" value="${project.base.dir}/src" />
+	<property name="output" value="${project.base.dir}/output" />
+	<property name="classes" value="${output}/classes" />
+	<property value="" name="jars.ok" />
+
+    <path id="project.class.path">
+		<pathelement path="${java.class.path}" />
+		<fileset dir="${env.HADOOP_HOME}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${classes}" />
+		<mkdir dir="${lib}" />
+	</target>
+
+	<target name="compile.src" depends="init">
+        <javac debug="on"
+               fork="true" destdir="${classes}" srcdir="${src}">
+            <classpath refid="project.class.path"/>
+        </javac>
+	</target>
+
+    <target name="jar" depends="compile.src">
+        <jar destfile="${output}/${name}.jar"
+             basedir="${classes}"
+             includes="**/*.class"
+             manifest="${resources}/MANIFEST.MF"
+             />
+      </target>
+
+	<target name="clean">
+		<delete dir="${output}/classes" />
+	</target>
+</project>

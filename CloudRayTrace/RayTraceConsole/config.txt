@@ -1,0 +1,6 @@
+location=0;-1;10
+direction=0;0;-1
+w=100
+h=100
+n=4
+square=false
