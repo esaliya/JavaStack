@@ -1,10 +1,11 @@
 package org.saliya.ompi.kmeans;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import mpi.MPI;
 import mpi.MPIException;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 
 import java.io.IOException;
 import java.nio.DoubleBuffer;
