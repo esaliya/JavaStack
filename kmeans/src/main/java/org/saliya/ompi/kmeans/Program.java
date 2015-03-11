@@ -51,8 +51,11 @@ public class Program {
         try {
             ParallelOptions.setupParallelism(args, n);
             double [][] points = Strings.isNullOrEmpty(pointsFile) ? generatePoints(d, ParallelOptions.myNumVec) : readPoints(pointsFile, ParallelOptions.globalVecStartIdx, ParallelOptions.myNumVec);
+//            printPoints(points);
             double [][] centers = Strings.isNullOrEmpty(centersFile) ? generateCenters(k, d) : readCenters(centersFile);
+            printPoints(centers);
             DoubleBuffer doubleBuffer = MPI.newDoubleBuffer(k*d);
+            DoubleBuffer doubleBuffer2 = MPI.newDoubleBuffer(n*d);
             IntBuffer intBuffer = MPI.newIntBuffer(k);
             IntBuffer intBuffer2 = MPI.newIntBuffer(n);
 
@@ -81,7 +84,8 @@ public class Program {
                 converged = true;
                 for (int i = 0; i < k; ++i){
                     double [] centerSum = centerSums[i];
-                    IntStream.range(0, d).forEach(j -> centerSum[j] /= pointsPerCenter[j]);
+                    int tmpI = i;
+                    IntStream.range(0, d).forEach(j -> centerSum[j] /= pointsPerCenter[tmpI]);
                     double dist = getEuclideanDistance(centerSum, centers[i]);
                     if (dist > t) converged = false;
                 }
@@ -90,6 +94,8 @@ public class Program {
                 centers = centerSums;
                 centerSums = tmp;
             }
+
+            System.out.println(ParallelOptions.rank + " " + Arrays.toString(clusterAssignments));
 
             // Gather cluster assignments
             int [] lengths = ParallelOptions.getLengthsArray(n);
@@ -100,12 +106,38 @@ public class Program {
             intBuffer2.position(ParallelOptions.globalVecStartIdx);
             intBuffer2.put(clusterAssignments);
             ParallelOptions.comm.allGatherv(intBuffer2, lengths, displas, MPI.INT);
+            if (ParallelOptions.rank == 0){
+                intBuffer2.position(0);
+                int [] tmp = new int[n];
+                intBuffer2.get(tmp);
+                System.out.println(Arrays.toString(tmp));
+            }
             ParallelOptions.endParallelism();
         } catch (MPIException e) {
             e.printStackTrace();
         }
     }
 
+    private static void printPoints(double [][] points){
+        int [] nextRank = new int[1];
+        for (int i = 0; i < ParallelOptions.size; i++) {
+            if (ParallelOptions.rank == 0) nextRank[0] = i;
+            try {
+                ParallelOptions.comm.bcast(nextRank,1, MPI.INT, 0);
+                if (nextRank[0] == ParallelOptions.rank){
+                    System.out.println("Rank: " + ParallelOptions.rank);
+                    for (int j = 0; j < points.length; j++) {
+                        double[] point = points[j];
+                        System.out.println(Arrays.toString(point));
+                    }
+                }
+            } catch (MPIException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
     private static void copyFromBuffer(IntBuffer buffer, int [] pointsPerCenter){
         buffer.position(0);
         buffer.get(pointsPerCenter);
@@ -135,7 +167,7 @@ public class Program {
         double dMin = Double.MAX_VALUE;
         int dMinIdx = -1;
         for (int j = 0; j < k; ++j) {
-            double dist = getEuclideanDistance(point, centers[k]);
+            double dist = getEuclideanDistance(point, centers[j]);
             if (dist < dMin){
                 dMin = dist;
                 dMinIdx = j;
@@ -164,11 +196,10 @@ public class Program {
         Arrays.stream(centerSums).forEach(centerSum -> IntStream.range(0,d).forEach(i -> centerSum[i] = 0.0));
     }
 
-
     private static double[][] generateCenters(int k, int d) {
         final double [][] centers = new double[k][d];
         IntStream.range(0, k).parallel().forEach(
-                i -> IntStream.range(0, d+1).parallel().forEach(j -> centers[i][j] = Math.random()));
+                i -> IntStream.range(0, d).parallel().forEach(j -> centers[i][j] = Math.random()));
         return centers;
     }
 
