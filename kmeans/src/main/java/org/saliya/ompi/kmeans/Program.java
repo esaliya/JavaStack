@@ -6,6 +6,7 @@ import mpi.MPI;
 import mpi.MPIException;
 import org.apache.commons.cli.*;
 
+import java.io.IOException;
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
@@ -18,23 +19,23 @@ public class Program {
         programOptions.addOption("d",true,"Dimensionality");
         programOptions.addOption("k",true,"Number of centers");
         programOptions.addOption("t",true,"Error threshold");
-        programOptions.addOption("c",false,"Initial center file");
-        programOptions.addOption("p",false,"Points file");
+        programOptions.addOption("c",true,"Initial center file");
+        programOptions.addOption("p",true,"Points file");
         programOptions.addOption("o",true,"Cluster assignment output file");
     }
 
     public static void main(String[] args) {
-        Optional<CommandLine> parserResult = parseCommandLineArguments(args, programOptions);
+        Optional<CommandLine> parserResult = Utils.parseCommandLineArguments(args, programOptions);
         if (!parserResult.isPresent()){
-            System.out.println(Constants.ERR_PROGRAM_ARGUMENTS_PARSING_FAILED);
-            new HelpFormatter().printHelp(Constants.PROGRAM_NAME, programOptions);
+            System.out.println(Utils.ERR_PROGRAM_ARGUMENTS_PARSING_FAILED);
+            new HelpFormatter().printHelp(Utils.PROGRAM_NAME, programOptions);
             return;
         }
 
         CommandLine cmd = parserResult.get();
-        if (!(cmd.hasOption("n") && cmd.hasOption("d") && cmd.hasOption("k") && cmd.hasOption("o") && cmd.hasOption("t"))) {
-            System.out.println(Constants.ERR_INVALID_PROGRAM_ARGUMENTS);
-            new HelpFormatter().printHelp(Constants.PROGRAM_NAME, programOptions);
+        if (!(cmd.hasOption("n") && cmd.hasOption("d") && cmd.hasOption("k") && cmd.hasOption("t") && cmd.hasOption("o")&& cmd.hasOption("c") && cmd.hasOption("p"))) {
+            System.out.println(Utils.ERR_INVALID_PROGRAM_ARGUMENTS);
+            new HelpFormatter().printHelp(Utils.PROGRAM_NAME, programOptions);
             return;
         }
 
@@ -50,11 +51,11 @@ public class Program {
 
         try {
             ParallelOptions.setupParallelism(args, n);
-            double [][] points = Strings.isNullOrEmpty(pointsFile) ? generatePoints(d, ParallelOptions.myNumVec) : readPoints(pointsFile, ParallelOptions.globalVecStartIdx, ParallelOptions.myNumVec);
+            double [][] points = readPoints(pointsFile, n, d, ParallelOptions.globalVecStartIdx, ParallelOptions.myNumVec);
 //            printPoints(points);
-            double [][] centers = Strings.isNullOrEmpty(centersFile) ? generateCenters(k, d) : readCenters(centersFile);
+            double [][] centers = readCenters(centersFile, k, d);
             printPoints(centers);
-            DoubleBuffer doubleBuffer = MPI.newDoubleBuffer(k*d);
+            DoubleBuffer doubleBuffer = MPI.newDoubleBuffer(k * d);
             DoubleBuffer doubleBuffer2 = MPI.newDoubleBuffer(n*d);
             IntBuffer intBuffer = MPI.newIntBuffer(k);
             IntBuffer intBuffer2 = MPI.newIntBuffer(n);
@@ -114,6 +115,8 @@ public class Program {
             }
             ParallelOptions.endParallelism();
         } catch (MPIException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -196,42 +199,24 @@ public class Program {
         Arrays.stream(centerSums).forEach(centerSum -> IntStream.range(0,d).forEach(i -> centerSum[i] = 0.0));
     }
 
-    private static double[][] generateCenters(int k, int d) {
-        final double [][] centers = new double[k][d];
-        IntStream.range(0, k).parallel().forEach(
-                i -> IntStream.range(0, d).parallel().forEach(j -> centers[i][j] = Math.random()));
-        return centers;
-    }
-
-    private static double[][] generatePoints(int d, int myNumVec) {
+    private static double[][] readPoints(String pointsFile, int n, int d, int globalVecStartIdx, int myNumVec)
+            throws IOException {
         double [][] points = new double[myNumVec][d];
-        IntStream.range(0, myNumVec).parallel().forEach(i -> IntStream.range(0, d).parallel().forEach(j -> points[i][j] = Math.random())); // -1 for assigned center
+        PointReader reader = PointReader.readRowRange(pointsFile, globalVecStartIdx, n, d);
+        for (int i = 0; i < myNumVec; i++) {
+            reader.getPoint(i+globalVecStartIdx, points[i]);
+        }
         return points;
     }
 
-    private static double[][] readPoints(String pointsFile, int globalVecStartIdx, int myNumVec) {
-        return new double[0][];
-    }
-
-    private static double[][] readCenters(String centersFile) {
-        return new double[0][];
-    }
-
-    /**
-     * Parse command line arguments
-     * @param args Command line arguments
-     * @param opts Command line options
-     * @return An <code>Optional&lt;CommandLine&gt;</code> object
-     */
-    private static Optional<CommandLine> parseCommandLineArguments(String [] args, Options opts){
-
-        CommandLineParser optParser = new GnuParser();
-
-        try {
-            return Optional.fromNullable(optParser.parse(opts, args));
-        } catch (ParseException e) {
-            System.out.println(e);
+    private static double[][] readCenters(String centersFile, int k, int d) throws IOException {
+        double [][] centers = new double[k][d];
+        PointReader reader = PointReader.readRowRange(centersFile, 0, k, d);
+        for (int i = 0; i < k; i++) {
+            reader.getPoint(i, centers[i]);
         }
-        return Optional.fromNullable(null);
+        return centers;
     }
+
+
 }
