@@ -63,12 +63,15 @@ public class Program {
 
             double [][] centerSums = new double[k][d];
             int [] pointsPerCenter = new int[k];
-            IntStream.range(0, k).forEach(i -> pointsPerCenter[i] = 0);
+            resetPointsPerCenter(pointsPerCenter);
             int [] clusterAssignments = new int[ParallelOptions.myNumVec];
 
+            int itrCount = 0;
             boolean converged = false;
             while (!converged){
+                ++itrCount;
                 resetCenterSums(centerSums, d);
+                resetPointsPerCenter(pointsPerCenter);
                 for (int i = 0; i < ParallelOptions.myNumVec; ++i){
                     double [] point = points[i];
                     int dMinIdx = findCenterWithMinDistance(point, centers);
@@ -96,8 +99,9 @@ public class Program {
                 centers = centerSums;
                 centerSums = tmp;
             }
+            System.out.println("itrCount: " + itrCount);
 
-            System.out.println(ParallelOptions.rank + " " + Arrays.toString(clusterAssignments));
+            System.out.println("Points per center\n" + ParallelOptions.rank + "\n" + Arrays.toString(pointsPerCenter));
 
             // Gather cluster assignments
             int [] lengths = ParallelOptions.getLengthsArray(n);
@@ -120,6 +124,11 @@ public class Program {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void resetPointsPerCenter(int[] pointsPerCenter) {
+        int k = pointsPerCenter.length;
+        IntStream.range(0,k).forEach(i -> pointsPerCenter[i] = 0);
     }
 
     private static void printPoints(double [][] points){
@@ -205,7 +214,7 @@ public class Program {
         double [][] points = new double[myNumVec][d];
         PointReader reader = PointReader.readRowRange(pointsFile, globalVecStartIdx, myNumVec, d);
         for (int i = 0; i < myNumVec; i++) {
-            reader.getPoint(i+globalVecStartIdx, points[i]);
+            reader.getPoint(i + globalVecStartIdx, points[i]);
         }
         return points;
     }
