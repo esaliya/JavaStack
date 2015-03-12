@@ -203,12 +203,9 @@ public class Program {
     private static double[][] readPoints(String pointsFile, int d, int globalVecStartIdx, int myNumVec)
             throws IOException {
         double [][] points = new double[myNumVec][d];
-        System.out.println(globalVecStartIdx + " " + myNumVec + " " + d);
         PointReader reader = PointReader.readRowRange(pointsFile, globalVecStartIdx, myNumVec, d);
         for (int i = 0; i < myNumVec; i++) {
-            System.out.println(i+globalVecStartIdx);
             reader.getPoint(i+globalVecStartIdx, points[i]);
-            System.out.println(Arrays.toString(points[i]));
         }
         return points;
     }

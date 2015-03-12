@@ -17,7 +17,7 @@ public class PointReader {
             long pos = ((long) startRow) * dimension * 8; // 8 for double values, which are 8 bytes long
             long size = ((long) numRows) * dimension * 8; // 8 for double values, which are 8 bytes long
 
-            int m = Integer.MAX_VALUE - 8; // m = 8n for some n where n denotes the number of doubles
+            int m = Integer.MAX_VALUE - 7; // m = (2^31-8) = 8n for some n where n denotes the number of doubles
             int mapCount = (int) Math.ceil((double) size / m);
             DoubleBuffer[] maps = new DoubleBuffer[mapCount];
             for (int i = 0; i < mapCount; ++i) {
@@ -28,10 +28,8 @@ public class PointReader {
             return new PointReader() {
                 @Override
                 public void getPoint(int globalRow, double [] point) {
-                    long pos = ((globalRow - startRow) * ((long) dimension)) * 8; // byte position relative to start row
-                    System.out.println("  " + pos);
+                    long pos = ((globalRow - startRow) * ((long) dimension)); // double position relative to start row
                     int mapIdx = (int) (pos / m);
-                    System.out.println("    " + mapIdx);
                     maps[mapIdx].position((int) (pos - (m * ((long) mapIdx))));
                     maps[mapIdx].get(point);
                 }
