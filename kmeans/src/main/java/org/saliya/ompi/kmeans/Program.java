@@ -33,6 +33,7 @@ public class Program {
         programOptions.addOption("d", true, "Dimensionality");
         programOptions.addOption("k", true, "Number of centers");
         programOptions.addOption("t", true, "Error threshold");
+        programOptions.addOption("m", true, "Max iteration count");
         programOptions.addOption("c", true, "Initial center file");
         programOptions.addOption("p", true, "Points file");
         programOptions.addOption("o", true, "Cluster assignment output file");
@@ -57,6 +58,7 @@ public class Program {
         int n = Integer.parseInt(cmd.getOptionValue("n"));
         int d = Integer.parseInt(cmd.getOptionValue("d"));
         int k = Integer.parseInt(cmd.getOptionValue("k"));
+        int m = Integer.parseInt(cmd.getOptionValue("m"));
         double t = Double.parseDouble(cmd.getOptionValue("t"));
         String outputFile = cmd.getOptionValue("o");
         String centersFile = cmd.hasOption("c") ? cmd.getOptionValue("c") : "";
@@ -95,7 +97,7 @@ public class Program {
             Stopwatch commTimerWithCopy = Stopwatch.createUnstarted();
             Stopwatch commTimer = Stopwatch.createUnstarted();
             long [] times = new long[]{0,0,0};
-            while (!converged) {
+            while (!converged && itrCount < m) {
                 ++itrCount;
                 resetCenterSums(centerSums, d);
                 resetPointsPerCenter(pointsPerCenter);
@@ -141,7 +143,10 @@ public class Program {
             loopTimer.reset();
 
             ParallelOptions.comm.reduce(times, 3, MPI.LONG, MPI.SUM, 0);
-            print("    Done in " + times[2] * 1.0 / ParallelOptions.size + " ms on average");
+            if (!converged){
+                print("    Stopping K-Means as max iteration count " + m + " has reached");
+            }
+            print("    Done in " + itrCount + " iterations and " + times[2] * 1.0 / ParallelOptions.size + " ms on average");
             print("    Avg. comm time " + times[1] * 1.0 / ParallelOptions.size + " ms");
             print("    Avg. comm time w/ copy" + times[0] * 1.0 / ParallelOptions.size + " ms");
 
