@@ -1,6 +1,5 @@
 package org.saliya.ompi.kmeans;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 import com.google.common.primitives.Doubles;
@@ -64,20 +63,20 @@ public class Program {
         String pointsFile = cmd.hasOption("p") ? cmd.getOptionValue("p") : "";
 
         try {
-            print("=== Program Started on " + dateFormat.format(new Date()) + " ===");
-            Stopwatch mainTimer = Stopwatch.createStarted();
             ParallelOptions.setupParallelism(args, n);
+            Stopwatch mainTimer = Stopwatch.createStarted();
+            print("=== Program Started on " + dateFormat.format(new Date()) + " ===");
             print("  Reading points ... ");
             Stopwatch timer = Stopwatch.createStarted();
             double[][] points = readPoints(pointsFile, d, ParallelOptions.globalVecStartIdx, ParallelOptions.myNumVec);
             timer.stop();
-            print("  Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + " ms");
+            print("    Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + " ms");
             timer.reset();
             print("  Reading centers ...");
             timer.start();
             double[][] centers = readCenters(centersFile, k, d);
             timer.stop();
-            print("  Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + " ms");
+            print("    Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + " ms");
             timer.reset();
 
             DoubleBuffer doubleBuffer = MPI.newDoubleBuffer(k * d);
@@ -143,7 +142,7 @@ public class Program {
             loopTimer.reset();
 
             ParallelOptions.comm.reduce(times, 3, MPI.LONG, MPI.SUM, 0);
-            print("  Done in " + times[3] * 1.0 / ParallelOptions.size + " ms on average");
+            print("    Done in " + times[2] * 1.0 / ParallelOptions.size + " ms on average");
             print("    Avg. comm time " + times[1] * 1.0 / ParallelOptions.size + " ms");
             print("    Avg. comm time w/ copy" + times[0] * 1.0 / ParallelOptions.size + " ms");
 
@@ -163,7 +162,7 @@ public class Program {
             long [] time = new long[]{timer.elapsed(TimeUnit.MILLISECONDS)};
             timer.reset();
             ParallelOptions.comm.reduce(time, 1, MPI.LONG, MPI.SUM, 0);
-            print("  Done in " + time[0]*1.0/ParallelOptions.size + " ms on average");
+            print("    Done in " + time[0]*1.0/ParallelOptions.size + " ms on average");
 
             if (ParallelOptions.rank == 0) {
                 print("  Writing output file ...");
@@ -179,11 +178,11 @@ public class Program {
                     }
                 }
                 timer.stop();
-                print("  Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + "ms");
+                print("    Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + "ms");
                 timer.reset();
             }
             mainTimer.stop();
-            print("=== Program terminated successfully on " + dateFormat.format(new Date())  +" running for" + (mainTimer.elapsed(TimeUnit.MILLISECONDS) * 0.0001)  + " seconds ===");
+            print("=== Program terminated successfully on " + dateFormat.format(new Date())  +" took " + (mainTimer.elapsed(TimeUnit.MILLISECONDS))  + " ms ===");
 
             ParallelOptions.endParallelism();
         } catch (MPIException | IOException e) {
