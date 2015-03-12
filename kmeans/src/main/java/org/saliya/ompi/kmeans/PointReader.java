@@ -1,9 +1,7 @@
 package org.saliya.ompi.kmeans;
 
 import java.io.IOException;
-import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
-import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -31,7 +29,9 @@ public class PointReader {
                 @Override
                 public void getPoint(int globalRow, double [] point) {
                     long pos = ((globalRow - startRow) * ((long) dimension)) * 8; // byte position relative to start row
+                    System.out.println("  " + pos);
                     int mapIdx = (int) (pos / m);
+                    System.out.println("    " + mapIdx);
                     maps[mapIdx].position((int) (pos - (m * ((long) mapIdx))));
                     maps[mapIdx].get(point);
                 }

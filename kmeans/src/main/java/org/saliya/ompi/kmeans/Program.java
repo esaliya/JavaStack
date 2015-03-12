@@ -52,7 +52,7 @@ public class Program {
 
         try {
             ParallelOptions.setupParallelism(args, n);
-            double [][] points = readPoints(pointsFile, n, d, ParallelOptions.globalVecStartIdx, ParallelOptions.myNumVec);
+            double [][] points = readPoints(pointsFile, d, ParallelOptions.globalVecStartIdx, ParallelOptions.myNumVec);
 //            printPoints(points);
             double [][] centers = readCenters(centersFile, k, d);
             printPoints(centers);
@@ -200,12 +200,15 @@ public class Program {
         Arrays.stream(centerSums).forEach(centerSum -> IntStream.range(0,d).forEach(i -> centerSum[i] = 0.0));
     }
 
-    private static double[][] readPoints(String pointsFile, int n, int d, int globalVecStartIdx, int myNumVec)
+    private static double[][] readPoints(String pointsFile, int d, int globalVecStartIdx, int myNumVec)
             throws IOException {
         double [][] points = new double[myNumVec][d];
-        PointReader reader = PointReader.readRowRange(pointsFile, globalVecStartIdx, n, d);
+        System.out.println(globalVecStartIdx + " " + myNumVec + " " + d);
+        PointReader reader = PointReader.readRowRange(pointsFile, globalVecStartIdx, myNumVec, d);
         for (int i = 0; i < myNumVec; i++) {
+            System.out.println(i+globalVecStartIdx);
             reader.getPoint(i+globalVecStartIdx, points[i]);
+            System.out.println(Arrays.toString(points[i]));
         }
         return points;
     }

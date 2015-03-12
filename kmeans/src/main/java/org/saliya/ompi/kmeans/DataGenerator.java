@@ -8,13 +8,10 @@ import org.apache.commons.cli.Options;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.HashSet;
-import java.util.stream.IntStream;
 
 public class DataGenerator {
     private static Options programOptions = new Options();
@@ -34,8 +31,7 @@ public class DataGenerator {
         }
 
         CommandLine cmd = parserResult.get();
-        if (!(cmd.hasOption("n") && cmd.hasOption("d") && cmd.hasOption("k") && cmd.hasOption("o") &&
-                cmd.hasOption("t"))) {
+        if (!(cmd.hasOption("n") && cmd.hasOption("d") && cmd.hasOption("k") && cmd.hasOption("o"))) {
             System.out.println(Utils.ERR_INVALID_PROGRAM_ARGUMENTS);
             new HelpFormatter().printHelp(Utils.PROGRAM_NAME, programOptions);
             return;
