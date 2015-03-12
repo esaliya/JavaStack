@@ -80,7 +80,6 @@ public class Program {
             timer.reset();
 
             DoubleBuffer doubleBuffer = MPI.newDoubleBuffer(k * d);
-            DoubleBuffer doubleBuffer2 = MPI.newDoubleBuffer(n * d);
             IntBuffer intBuffer = MPI.newIntBuffer(k);
             IntBuffer intBuffer2 = MPI.newIntBuffer(n);
 
