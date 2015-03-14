@@ -82,9 +82,14 @@ public class Program {
             print("    Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + " ms");
             timer.reset();
 
+            print("  Allocating buffers");
+            timer.start();
             DoubleBuffer doubleBuffer = MPI.newDoubleBuffer(k * d);
             IntBuffer intBuffer = MPI.newIntBuffer(k);
             IntBuffer intBuffer2 = MPI.newIntBuffer(n);
+            timer.stop();
+            print("  Done in " + timer.elapsed(TimeUnit.MILLISECONDS)); // This would be similar across all processes, so no need to do average
+            timer.reset();
 
             double[][] centerSums = new double[k][d];
             int[] pointsPerCenter = new int[k];
