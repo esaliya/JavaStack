@@ -2,6 +2,7 @@ package org.saliya.ompi.kmeans;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
+import com.google.common.base.Strings;
 import com.google.common.primitives.Doubles;
 import mpi.MPI;
 import mpi.MPIException;
@@ -36,7 +37,7 @@ public class Program {
         programOptions.addOption("m", true, "Max iteration count");
         programOptions.addOption("c", true, "Initial center file");
         programOptions.addOption("p", true, "Points file");
-        programOptions.addOption("o", true, "Cluster assignment output file");
+        programOptions.addOption("o", false, "Cluster assignment output file");
     }
 
     public static void main(String[] args) {
@@ -49,7 +50,7 @@ public class Program {
 
         CommandLine cmd = parserResult.get();
         if (!(cmd.hasOption("n") && cmd.hasOption("d") && cmd.hasOption("k") && cmd.hasOption("t") &&
-                cmd.hasOption("o") && cmd.hasOption("c") && cmd.hasOption("p"))) {
+                cmd.hasOption("c") && cmd.hasOption("p"))) {
             System.out.println(Utils.ERR_INVALID_PROGRAM_ARGUMENTS);
             new HelpFormatter().printHelp(Utils.PROGRAM_NAME, programOptions);
             return;
@@ -60,7 +61,7 @@ public class Program {
         int k = Integer.parseInt(cmd.getOptionValue("k"));
         int m = Integer.parseInt(cmd.getOptionValue("m"));
         double t = Double.parseDouble(cmd.getOptionValue("t"));
-        String outputFile = cmd.getOptionValue("o");
+        String outputFile = cmd.hasOption("o") ? cmd.getOptionValue("o") : "";
         String centersFile = cmd.hasOption("c") ? cmd.getOptionValue("c") : "";
         String pointsFile = cmd.hasOption("p") ? cmd.getOptionValue("p") : "";
 
@@ -151,39 +152,40 @@ public class Program {
             print("    Avg. comm time w/ copy" + times[0] * 1.0 / ParallelOptions.size + " ms");
 
 
-            // Gather cluster assignments
-            print("  Gathering cluster assignments ...");
-            timer.start();
-            int[] lengths = ParallelOptions.getLengthsArray(n);
-            int[] displas = new int[n];
-            displas[0] = 0;
-            System.arraycopy(lengths, 0, displas, 1, n - 1);
-            Arrays.parallelPrefix(displas, (p, q) -> p + q);
-            intBuffer2.position(ParallelOptions.globalVecStartIdx);
-            intBuffer2.put(clusterAssignments);
-            ParallelOptions.comm.allGatherv(intBuffer2, lengths, displas, MPI.INT);
-            timer.stop();
-            long [] time = new long[]{timer.elapsed(TimeUnit.MILLISECONDS)};
-            timer.reset();
-            ParallelOptions.comm.reduce(time, 1, MPI.LONG, MPI.SUM, 0);
-            print("    Done in " + time[0]*1.0/ParallelOptions.size + " ms on average");
-
-            if (ParallelOptions.rank == 0) {
-                print("  Writing output file ...");
+            if (!Strings.isNullOrEmpty(outputFile)) {
+                // Gather cluster assignments
+                print("  Gathering cluster assignments ...");
                 timer.start();
-                try (PrintWriter writer = new PrintWriter(
-                        Files.newBufferedWriter(Paths.get(outputFile), Charset.defaultCharset(),
-                                                StandardOpenOption.CREATE, StandardOpenOption.WRITE), true)){
-                    PointReader reader = PointReader.readRowRange(pointsFile, 0, n, d);
-                    double [] point = new double[d];
-                    for (int i = 0; i < n; ++i){
-                        reader.getPoint(i, point);
-                        writer.println(i + "\t" + Doubles.join("\t", point) + "\t" + intBuffer2.get(i));
-                    }
-                }
+                int[] lengths = ParallelOptions.getLengthsArray(n);
+                int[] displas = new int[n];
+                displas[0] = 0;
+                System.arraycopy(lengths, 0, displas, 1, n - 1);
+                Arrays.parallelPrefix(displas, (p, q) -> p + q);
+                intBuffer2.position(ParallelOptions.globalVecStartIdx);
+                intBuffer2.put(clusterAssignments);
+                ParallelOptions.comm.allGatherv(intBuffer2, lengths, displas, MPI.INT);
                 timer.stop();
-                print("    Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + "ms");
+                long[] time = new long[]{timer.elapsed(TimeUnit.MILLISECONDS)};
                 timer.reset();
+                ParallelOptions.comm.reduce(time, 1, MPI.LONG, MPI.SUM, 0);
+                print("    Done in " + time[0] * 1.0 / ParallelOptions.size + " ms on average");
+
+                if (ParallelOptions.rank == 0) {
+                    print("  Writing output file ...");
+                    timer.start();
+                    try (PrintWriter writer = new PrintWriter(
+                            Files.newBufferedWriter(Paths.get(outputFile), Charset.defaultCharset(), StandardOpenOption.CREATE, StandardOpenOption.WRITE), true)) {
+                        PointReader reader = PointReader.readRowRange(pointsFile, 0, n, d);
+                        double[] point = new double[d];
+                        for (int i = 0; i < n; ++i) {
+                            reader.getPoint(i, point);
+                            writer.println(i + "\t" + Doubles.join("\t", point) + "\t" + intBuffer2.get(i));
+                        }
+                    }
+                    timer.stop();
+                    print("    Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + "ms");
+                    timer.reset();
+                }
             }
             mainTimer.stop();
             print("=== Program terminated successfully on " + dateFormat.format(new Date())  +" took " + (mainTimer.elapsed(TimeUnit.MILLISECONDS))  + " ms ===");
