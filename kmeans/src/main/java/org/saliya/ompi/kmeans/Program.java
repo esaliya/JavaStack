@@ -35,6 +35,7 @@ public class Program {
         programOptions.addOption("k", true, "Number of centers");
         programOptions.addOption("t", true, "Error threshold");
         programOptions.addOption("m", true, "Max iteration count");
+        programOptions.addOption("b", true, "Is big-endian?");
         programOptions.addOption("c", true, "Initial center file");
         programOptions.addOption("p", true, "Points file");
         programOptions.addOption("o", false, "Cluster assignment output file");
@@ -50,7 +51,7 @@ public class Program {
 
         CommandLine cmd = parserResult.get();
         if (!(cmd.hasOption("n") && cmd.hasOption("d") && cmd.hasOption("k") && cmd.hasOption("t") &&
-                cmd.hasOption("c") && cmd.hasOption("p"))) {
+                cmd.hasOption("m") && cmd.hasOption("b") && cmd.hasOption("c") && cmd.hasOption("p"))) {
             System.out.println(Utils.ERR_INVALID_PROGRAM_ARGUMENTS);
             new HelpFormatter().printHelp(Utils.PROGRAM_NAME, programOptions);
             return;
@@ -61,6 +62,7 @@ public class Program {
         int k = Integer.parseInt(cmd.getOptionValue("k"));
         int m = Integer.parseInt(cmd.getOptionValue("m"));
         double t = Double.parseDouble(cmd.getOptionValue("t"));
+        boolean isBigEndian = Boolean.parseBoolean(cmd.getOptionValue("b"));
         String outputFile = cmd.hasOption("o") ? cmd.getOptionValue("o") : "";
         String centersFile = cmd.hasOption("c") ? cmd.getOptionValue("c") : "";
         String pointsFile = cmd.hasOption("p") ? cmd.getOptionValue("p") : "";
@@ -71,13 +73,13 @@ public class Program {
             print("=== Program Started on " + dateFormat.format(new Date()) + " ===");
             print("  Reading points ... ");
             Stopwatch timer = Stopwatch.createStarted();
-            double[][] points = readPoints(pointsFile, d, ParallelOptions.globalVecStartIdx, ParallelOptions.myNumVec);
+            double[][] points = readPoints(pointsFile, d, ParallelOptions.globalVecStartIdx, ParallelOptions.myNumVec, isBigEndian);
             timer.stop();
             print("    Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + " ms");
             timer.reset();
             print("  Reading centers ...");
             timer.start();
-            double[][] centers = readCenters(centersFile, k, d);
+            double[][] centers = readCenters(centersFile, k, d, isBigEndian);
             timer.stop();
             print("    Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + " ms");
             timer.reset();
@@ -180,7 +182,7 @@ public class Program {
                     timer.start();
                     try (PrintWriter writer = new PrintWriter(
                             Files.newBufferedWriter(Paths.get(outputFile), Charset.defaultCharset(), StandardOpenOption.CREATE, StandardOpenOption.WRITE), true)) {
-                        PointReader reader = PointReader.readRowRange(pointsFile, 0, n, d);
+                        PointReader reader = PointReader.readRowRange(pointsFile, 0, n, d, isBigEndian);
                         double[] point = new double[d];
                         for (int i = 0; i < n; ++i) {
                             reader.getPoint(i, point);
@@ -271,19 +273,19 @@ public class Program {
         Arrays.stream(centerSums).forEach(centerSum -> IntStream.range(0, d).forEach(i -> centerSum[i] = 0.0));
     }
 
-    private static double[][] readPoints(String pointsFile, int d, int globalVecStartIdx, int myNumVec)
+    private static double[][] readPoints(String pointsFile, int d, int globalVecStartIdx, int myNumVec, boolean isBigEndian)
             throws IOException {
         double[][] points = new double[myNumVec][d];
-        PointReader reader = PointReader.readRowRange(pointsFile, globalVecStartIdx, myNumVec, d);
+        PointReader reader = PointReader.readRowRange(pointsFile, globalVecStartIdx, myNumVec, d, isBigEndian);
         for (int i = 0; i < myNumVec; i++) {
             reader.getPoint(i + globalVecStartIdx, points[i]);
         }
         return points;
     }
 
-    private static double[][] readCenters(String centersFile, int k, int d) throws IOException {
+    private static double[][] readCenters(String centersFile, int k, int d, boolean isBigEndian) throws IOException {
         double[][] centers = new double[k][d];
-        PointReader reader = PointReader.readRowRange(centersFile, 0, k, d);
+        PointReader reader = PointReader.readRowRange(centersFile, 0, k, d, isBigEndian);
         for (int i = 0; i < k; i++) {
             reader.getPoint(i, centers[i]);
         }

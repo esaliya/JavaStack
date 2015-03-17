@@ -1,6 +1,7 @@
 package org.saliya.ompi.kmeans;
 
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
@@ -12,7 +13,7 @@ public class PointReader {
         throw new UnsupportedOperationException();
     }
 
-    public static PointReader readRowRange(String fname, int startRow, int numRows, int dimension) throws IOException {
+    public static PointReader readRowRange(String fname, int startRow, int numRows, int dimension, boolean isBigEndian) throws IOException {
         try (FileChannel fc = (FileChannel) Files.newByteChannel(Paths.get(fname), StandardOpenOption.READ)) {
             long pos = ((long) startRow) * dimension * 8; // 8 for double values, which are 8 bytes long
             long size = ((long) numRows) * dimension * 8; // 8 for double values, which are 8 bytes long
@@ -22,7 +23,9 @@ public class PointReader {
             DoubleBuffer[] maps = new DoubleBuffer[mapCount];
             for (int i = 0; i < mapCount; ++i) {
                 maps[i] =
-                        fc.map(FileChannel.MapMode.READ_ONLY, pos + (((long) i) * m), i < mapCount - 1 ? m : size % m).asDoubleBuffer();
+                        fc.map(FileChannel.MapMode.READ_ONLY, pos + (((long) i) * m), i < mapCount - 1 ? m : size % m).order(
+                                isBigEndian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN).asDoubleBuffer();
+
             }
 
             return new PointReader() {
