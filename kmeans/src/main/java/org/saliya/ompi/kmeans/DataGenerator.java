@@ -55,7 +55,6 @@ public class DataGenerator
         String outputDir = cmd.getOptionValue("o");
 
 
-
         if (isText)
         {
             generatePointsAsText(n, d, k, outputDir);
@@ -76,11 +75,13 @@ public class DataGenerator
 
         try (PrintWriter pointsWriter = new PrintWriter(
             Files.newBufferedWriter(
-                pointsFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
+                pointsFile, StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING,
                 StandardOpenOption.WRITE));
             PrintWriter centersWriter = new PrintWriter(
                 Files.newBufferedWriter(
-                    centersFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
+                    centersFile, StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING,
                     StandardOpenOption.WRITE)))
         {
             DecimalFormat twoDForm = new DecimalFormat("0.0000");
@@ -89,12 +90,14 @@ public class DataGenerator
                 for (int j = 0; j < d; j++)
                 {
                     double coord = Math.random();
-                    pointsWriter.print(twoDForm.format(coord) + ((j == (d-1)) ? "\n" : ","));
+                    pointsWriter.print(
+                        twoDForm.format(coord) + ((j == (d - 1)) ? "\n" : ","));
                     if (i >= k)
                     {
                         continue;
                     }
-                    centersWriter.print(twoDForm.format(coord) + ((j == (d-1)) ? "\n" : ","));
+                    centersWriter.print(
+                        twoDForm.format(coord) + ((j == (d - 1)) ? "\n" : ","));
                 }
             }
         }
@@ -106,8 +109,8 @@ public class DataGenerator
     }
 
     private static void generatePointsAsBinary(
-        int n, int d, int k, boolean isBigEndian, String outputDir
-        ) throws IOException
+        int n, int d, int k, boolean isBigEndian, String outputDir)
+        throws IOException
     {
         Path pointsFile = Paths.get(outputDir, "points.bin");
         Path centersFile = Paths.get(outputDir, "centers.bin");
