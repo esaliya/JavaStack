@@ -6,7 +6,8 @@ import mpi.MPIException;
 
 import java.util.stream.IntStream;
 
-public class ParallelOptions {
+public class ParallelOptions
+{
 
     public static int rank = 0;
     public static int size = 1;
@@ -16,7 +17,9 @@ public class ParallelOptions {
     public static int globalVecStartIdx;
 
 
-    public static void setupParallelism(String [] args, int numVec) throws MPIException {
+    public static void setupParallelism(String[] args, int numVec)
+        throws MPIException
+    {
         MPI.Init(args);
         comm = MPI.COMM_WORLD;
         rank = comm.getRank();
@@ -25,23 +28,26 @@ public class ParallelOptions {
     }
 
 
-
-    public static void endParallelism() throws MPIException {
+    public static void endParallelism() throws MPIException
+    {
         MPI.Finalize();
     }
 
-    private static void decomposeDomain(int numVec){
+    private static void decomposeDomain(int numVec)
+    {
         int div = numVec / size;
         int rem = numVec % size;
-        myNumVec = rank < rem ? div+1 : div;
-        globalVecStartIdx = rank *div + (rank < rem ? rank : rem);
+        myNumVec = rank < rem ? div + 1 : div;
+        globalVecStartIdx = rank * div + (rank < rem ? rank : rem);
     }
 
-    public static int[] getLengthsArray(int numVec){
+    public static int[] getLengthsArray(int numVec)
+    {
         int div = numVec / size;
         int rem = numVec % size;
-        int [] lengths = new int[numVec];
-        IntStream.range(0,numVec).forEach(i -> lengths[i] = i > rem ? div : div+1);
+        int[] lengths = new int[numVec];
+        IntStream.range(0, numVec)
+                 .forEach(i -> lengths[i] = i > rem ? div : div + 1);
         return lengths;
     }
 }

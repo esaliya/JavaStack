@@ -7,10 +7,13 @@ import org.apache.commons.cli.*;
 
 import java.util.Arrays;
 
-public class Utils {
+public class Utils
+{
     static final String PROGRAM_NAME = "K-Means";
-    static final String ERR_PROGRAM_ARGUMENTS_PARSING_FAILED = "Argument parsing failed!";
-    static final String ERR_INVALID_PROGRAM_ARGUMENTS = "Invalid program arguments!";
+    static final String ERR_PROGRAM_ARGUMENTS_PARSING_FAILED
+        = "Argument parsing failed!";
+    static final String ERR_INVALID_PROGRAM_ARGUMENTS
+        = "Invalid program arguments!";
     static final String ERR_EMPTY_FILE_NAME = "File name is null or empty!";
 
     /**
@@ -20,26 +23,38 @@ public class Utils {
      * @param opts Command line options
      * @return An <code>Optional&lt;CommandLine&gt;</code> object
      */
-    public static Optional<CommandLine> parseCommandLineArguments(String[] args, Options opts) {
+    public static Optional<CommandLine> parseCommandLineArguments(
+        String[] args, Options opts)
+    {
 
         CommandLineParser optParser = new GnuParser();
 
-        try {
+        try
+        {
             return Optional.fromNullable(optParser.parse(opts, args));
-        } catch (ParseException e) {
+        }
+        catch (ParseException e)
+        {
             System.out.println(e);
         }
         return Optional.fromNullable(null);
     }
 
-    public static void printPoints(double[][] points) throws MPIException {
+    public static void printPoints(double[][] points) throws MPIException
+    {
         int[] nextRank = new int[1];
-        for (int i = 0; i < ParallelOptions.size; i++) {
-            if (ParallelOptions.rank == 0) nextRank[0] = i;
+        for (int i = 0; i < ParallelOptions.size; i++)
+        {
+            if (ParallelOptions.rank == 0)
+            {
+                nextRank[0] = i;
+            }
             ParallelOptions.comm.bcast(nextRank, 1, MPI.INT, 0);
-            if (nextRank[0] == ParallelOptions.rank) {
+            if (nextRank[0] == ParallelOptions.rank)
+            {
                 System.out.println("Rank: " + ParallelOptions.rank);
-                for (int j = 0; j < points.length; j++) {
+                for (int j = 0; j < points.length; j++)
+                {
                     double[] point = points[j];
                     System.out.println(Arrays.toString(point));
                 }
