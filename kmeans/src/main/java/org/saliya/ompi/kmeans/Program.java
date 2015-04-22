@@ -25,6 +25,9 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
+import static edu.rice.hj.Module0.launchHabaneroApp;
+import static edu.rice.hj.Module1.forallChunked;
+
 public class Program
 {
     private static DateFormat dateFormat = new SimpleDateFormat(
@@ -39,6 +42,7 @@ public class Program
         programOptions.addOption("t", true, "Error threshold");
         programOptions.addOption("m", true, "Max iteration count");
         programOptions.addOption("b", true, "Is big-endian?");
+        programOptions.addOption("T", true, "Number of threads");
         programOptions.addOption("c", true, "Initial center file");
         programOptions.addOption("p", true, "Points file");
         programOptions.addOption("o", false, "Cluster assignment output file");
@@ -57,9 +61,8 @@ public class Program
 
         CommandLine cmd = parserResult.get();
         if (!(cmd.hasOption("n") && cmd.hasOption("d") && cmd.hasOption("k") &&
-              cmd.hasOption("t") &&
-              cmd.hasOption("m") && cmd.hasOption("b") && cmd.hasOption("c") &&
-              cmd.hasOption("p")))
+              cmd.hasOption("t") && cmd.hasOption("m") && cmd.hasOption("b") &&
+              cmd.hasOption("c") && cmd.hasOption("p") && cmd.hasOption("T")))
         {
             System.out.println(Utils.ERR_INVALID_PROGRAM_ARGUMENTS);
             new HelpFormatter().printHelp(Utils.PROGRAM_NAME, programOptions);
@@ -71,6 +74,7 @@ public class Program
         int k = Integer.parseInt(cmd.getOptionValue("k"));
         int m = Integer.parseInt(cmd.getOptionValue("m"));
         double t = Double.parseDouble(cmd.getOptionValue("t"));
+        int numThreads = Integer.parseInt(cmd.getOptionValue("T"));
         boolean isBigEndian = Boolean.parseBoolean(cmd.getOptionValue("b"));
         String outputFile = cmd.hasOption("o") ? cmd.getOptionValue("o") : "";
         String centersFile = cmd.hasOption("c") ? cmd.getOptionValue("c") : "";
@@ -78,14 +82,14 @@ public class Program
 
         try
         {
-            ParallelOptions.setupParallelism(args, n);
+            ParallelOptions.setupParallelism(args, n, numThreads);
             Stopwatch mainTimer = Stopwatch.createStarted();
             print(
                 "=== Program Started on " + dateFormat.format(new Date()) +
                 " ===");
             print("  Reading points ... ");
             Stopwatch timer = Stopwatch.createStarted();
-            double[][] points = readPoints(
+            final double[][] points = readPoints(
                 pointsFile, d, ParallelOptions.globalVecStartIdx,
                 ParallelOptions.myNumVec, isBigEndian);
             timer.stop();
@@ -100,22 +104,29 @@ public class Program
                 "    Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + " ms");
             timer.reset();
 
-            print("  Allocating buffers");
-            timer.start();
-            DoubleBuffer doubleBuffer = MPI.newDoubleBuffer(k * d);
-            IntBuffer intBuffer = MPI.newIntBuffer(k);
-            IntBuffer intBuffer2 = MPI.newIntBuffer(n);
-            timer.stop();
-            print(
-                "  Done in " + timer.elapsed(
-                    TimeUnit.MILLISECONDS)); // This would be similar across
-            // all processes, so no need to do average
-            timer.reset();
 
-            double[][] centerSums = new double[k][d];
-            int[] pointsPerCenter = new int[k];
-            resetPointsPerCenter(pointsPerCenter);
-            int[] clusterAssignments = new int[ParallelOptions.myNumVec];
+            DoubleBuffer doubleBuffer = null;
+            IntBuffer intBuffer = null;
+            IntBuffer intBuffer2 = null;
+            if (ParallelOptions.size > 1)
+            {
+                print("  Allocating buffers");
+                timer.start();
+                doubleBuffer = MPI.newDoubleBuffer(k * d);
+                intBuffer = MPI.newIntBuffer(k);
+                intBuffer2 = MPI.newIntBuffer(n);
+                timer.stop();
+                // This would be similar across
+                // all processes, so no need to do average
+                print("  Done in " + timer.elapsed(TimeUnit.MILLISECONDS));
+                timer.reset();
+            }
+
+            final double[][][] centerSumsForThread = new double [numThreads] [k][d];
+            final int[][] pointsPerCenterForThread = new int[numThreads][k];
+            final int[] clusterAssignments = new int[ParallelOptions.myNumVec];
+
+            resetPointsPerCenter(pointsPerCenterForThread);
 
             int itrCount = 0;
             boolean converged = false;
@@ -127,58 +138,88 @@ public class Program
             while (!converged && itrCount < m)
             {
                 ++itrCount;
-                resetCenterSums(centerSums, d);
-                resetPointsPerCenter(pointsPerCenter);
-                for (int i = 0; i < ParallelOptions.myNumVec; ++i)
-                {
-                    double[] point = points[i];
-                    int dMinIdx = findCenterWithMinDistance(point, centers);
-                    ++pointsPerCenter[dMinIdx];
-                    accumulate(point, centerSums, dMinIdx);
-                    clusterAssignments[i] = dMinIdx;
+                resetCenterSums(centerSumsForThread, d);
+                resetPointsPerCenter(pointsPerCenterForThread);
+
+                final double[][] immutableCenters = centers;
+                launchHabaneroApp(
+                    () -> {
+                        forallChunked(
+                            0, numThreads - 1,
+                            (threadIndex) -> {
+                                int threadLocalMyNumVec = ParallelOptions.myNumVecForThread[threadIndex];
+                                int threadLocalVecStartIdx = ParallelOptions.vecStartIdxForThread[threadIndex];
+
+                                for (int i = 0; i < threadLocalMyNumVec; ++i)
+                                {
+                                    double [] point = points[i+threadLocalVecStartIdx];
+                                    int dMinIdx = findCenterWithMinDistance(point,
+                                                                            immutableCenters);
+                                    ++pointsPerCenterForThread[threadIndex][dMinIdx];
+                                    accumulate(point, centerSumsForThread[threadIndex], dMinIdx);
+                                    clusterAssignments[i] = dMinIdx;
+                                }
+                            });
+                    });
+
+                // Sum over threads
+                // Place results to arrays of thread 0
+                for (int i = 1; i < numThreads; ++i){
+                    for (int c = 0; c < k; ++c){
+                        pointsPerCenterForThread[0][c] += pointsPerCenterForThread[i][c];
+                        for (int dim = 0; dim < d; ++d){
+                            centerSumsForThread[0][c][d] += centerSumsForThread[i][c][d];
+                        }
+                    }
                 }
-                commTimerWithCopy.start();
-                copyToBuffer(centerSums, doubleBuffer);
-                copyToBuffer(pointsPerCenter, intBuffer);
-                commTimer.start();
-                ParallelOptions.comm
-                    .allReduce(doubleBuffer, d * k, MPI.DOUBLE, MPI.SUM);
-                commTimer.stop();
-                copyFromBuffer(doubleBuffer, centerSums);
-                commTimer.start();
-                ParallelOptions.comm.allReduce(intBuffer, k, MPI.INT, MPI.SUM);
-                commTimer.stop();
-                copyFromBuffer(intBuffer, pointsPerCenter);
-                commTimerWithCopy.stop();
-                times[0] += commTimerWithCopy.elapsed(TimeUnit.MILLISECONDS);
-                times[1] += commTimer.elapsed(TimeUnit.MILLISECONDS);
-                commTimerWithCopy.reset();
-                commTimer.reset();
+
+                if (ParallelOptions.size > 1)
+                {
+                    commTimerWithCopy.start();
+                    copyToBuffer(centerSumsForThread[0], doubleBuffer);
+                    copyToBuffer(pointsPerCenterForThread[0], intBuffer);
+                    commTimer.start();
+                    ParallelOptions.comm
+                        .allReduce(doubleBuffer, d * k, MPI.DOUBLE, MPI.SUM);
+                    commTimer.stop();
+                    copyFromBuffer(doubleBuffer, centerSumsForThread[0]);
+                    commTimer.start();
+                    ParallelOptions.comm
+                        .allReduce(intBuffer, k, MPI.INT, MPI.SUM);
+                    commTimer.stop();
+                    copyFromBuffer(intBuffer, pointsPerCenterForThread[0]);
+                    commTimerWithCopy.stop();
+                    times[0] += commTimerWithCopy.elapsed(TimeUnit.MILLISECONDS);
+                    times[1] += commTimer.elapsed(TimeUnit.MILLISECONDS);
+                    commTimerWithCopy.reset();
+                    commTimer.reset();
+                }
 
                 converged = true;
                 for (int i = 0; i < k; ++i)
                 {
-                    double[] centerSum = centerSums[i];
+                    double[] centerSum = centerSumsForThread[0][i];
                     int tmpI = i;
                     IntStream.range(0, d).forEach(
-                        j -> centerSum[j] /= pointsPerCenter[tmpI]);
+                        j -> centerSum[j] /= pointsPerCenterForThread[0][tmpI]);
                     double dist = getEuclideanDistance(centerSum, centers[i]);
                     if (dist > t)
                     {
                         converged = false;
                     }
                 }
-                // Swap centerSums, which now contains the updated centers
-                // with original centers
-                double[][] tmp = centers;
-                centers = centerSums;
-                centerSums = tmp;
+                // Replace original center with centerSumsForThread[0],
+                // which now contains the updated centers
+                centers = centerSumsForThread[0];
             }
             loopTimer.stop();
             times[2] = loopTimer.elapsed(TimeUnit.MILLISECONDS);
             loopTimer.reset();
 
-            ParallelOptions.comm.reduce(times, 3, MPI.LONG, MPI.SUM, 0);
+            if (ParallelOptions.size > 1)
+            {
+                ParallelOptions.comm.reduce(times, 3, MPI.LONG, MPI.SUM, 0);
+            }
             if (!converged)
             {
                 print(
@@ -188,35 +229,42 @@ public class Program
             print(
                 "    Done in " + itrCount + " iterations and " +
                 times[2] * 1.0 / ParallelOptions.size + " ms on average");
-            print(
-                "    Avg. comm time " + times[1] * 1.0 / ParallelOptions.size +
-                " ms");
-            print(
-                "    Avg. comm time w/ copy" +
-                times[0] * 1.0 / ParallelOptions.size + " ms");
+            if (ParallelOptions.size > 1)
+            {
+                print(
+                    "    Avg. comm time " +
+                    times[1] * 1.0 / ParallelOptions.size +
+                    " ms");
+                print(
+                    "    Avg. comm time w/ copy" +
+                    times[0] * 1.0 / ParallelOptions.size + " ms");
+            }
 
 
             if (!Strings.isNullOrEmpty(outputFile))
             {
-                // Gather cluster assignments
-                print("  Gathering cluster assignments ...");
-                timer.start();
-                int[] lengths = ParallelOptions.getLengthsArray(n);
-                int[] displas = new int[n];
-                displas[0] = 0;
-                System.arraycopy(lengths, 0, displas, 1, n - 1);
-                Arrays.parallelPrefix(displas, (p, q) -> p + q);
-                intBuffer2.position(ParallelOptions.globalVecStartIdx);
-                intBuffer2.put(clusterAssignments);
-                ParallelOptions.comm
-                    .allGatherv(intBuffer2, lengths, displas, MPI.INT);
-                timer.stop();
-                long[] time = new long[]{timer.elapsed(TimeUnit.MILLISECONDS)};
-                timer.reset();
-                ParallelOptions.comm.reduce(time, 1, MPI.LONG, MPI.SUM, 0);
-                print(
-                    "    Done in " + time[0] * 1.0 / ParallelOptions.size +
-                    " ms on average");
+                if (ParallelOptions.size > 1)
+                {
+                    // Gather cluster assignments
+                    print("  Gathering cluster assignments ...");
+                    timer.start();
+                    int[] lengths = ParallelOptions.getLengthsArray(n);
+                    int[] displas = new int[n];
+                    displas[0] = 0;
+                    System.arraycopy(lengths, 0, displas, 1, n - 1);
+                    Arrays.parallelPrefix(displas, (p, q) -> p + q);
+                    intBuffer2.position(ParallelOptions.globalVecStartIdx);
+                    intBuffer2.put(clusterAssignments);
+                    ParallelOptions.comm
+                        .allGatherv(intBuffer2, lengths, displas, MPI.INT);
+                    timer.stop();
+                    long[] time = new long[]{timer.elapsed(TimeUnit.MILLISECONDS)};
+                    timer.reset();
+                    ParallelOptions.comm.reduce(time, 1, MPI.LONG, MPI.SUM, 0);
+                    print(
+                        "    Done in " + time[0] * 1.0 / ParallelOptions.size +
+                        " ms on average");
+                }
 
                 if (ParallelOptions.rank == 0)
                 {
@@ -236,7 +284,8 @@ public class Program
                             reader.getPoint(i, point);
                             writer.println(
                                 i + "\t" + Doubles.join("\t", point) + "\t" +
-                                intBuffer2.get(i));
+                                ((ParallelOptions.size > 1) ? intBuffer2.get(i)
+                                                            : clusterAssignments[i]));
                         }
                     }
                     timer.stop();
@@ -260,10 +309,12 @@ public class Program
         }
     }
 
-    private static void resetPointsPerCenter(int[] pointsPerCenter)
+    private static void resetPointsPerCenter(int[][] pointsPerCenterForThread)
     {
-        int k = pointsPerCenter.length;
-        IntStream.range(0, k).forEach(i -> pointsPerCenter[i] = 0);
+        Arrays.stream(pointsPerCenterForThread).forEach(
+            threadLocalPointsPerCenter -> Arrays
+                .stream(threadLocalPointsPerCenter)
+                .forEach(center -> threadLocalPointsPerCenter[center] = 0));
     }
 
 
@@ -345,11 +396,15 @@ public class Program
         return Math.sqrt(d);
     }
 
-    private static void resetCenterSums(double[][] centerSums, int d)
+    private static void resetCenterSums(double[][][] centerSumsForThread, int d)
     {
-        Arrays.stream(centerSums).forEach(
-            centerSum -> IntStream.range(0, d)
-                                  .forEach(i -> centerSum[i] = 0.0));
+        Arrays.stream(centerSumsForThread).forEach(
+            threadLocalCenterSums -> Arrays.stream(threadLocalCenterSums)
+                                           .forEach(
+                                               centerSum -> IntStream
+                                                   .range(0, d).forEach(
+                                                       i -> centerSum[i] =
+                                                           0.0)));
     }
 
     private static double[][] readPoints(

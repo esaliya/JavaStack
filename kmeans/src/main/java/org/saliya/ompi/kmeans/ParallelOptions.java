@@ -13,17 +13,24 @@ public class ParallelOptions
     public static int size = 1;
     public static Intracomm comm;
 
+    public static int numThreads = 1;
+
     public static int myNumVec;
     public static int globalVecStartIdx;
+    public static int [] myNumVecForThread;
+    public static int [] vecStartIdxForThread;
 
 
-    public static void setupParallelism(String[] args, int numVec)
+    public static void setupParallelism(String[] args, int numVec, int numThreads)
         throws MPIException
     {
         MPI.Init(args);
         comm = MPI.COMM_WORLD;
         rank = comm.getRank();
         size = comm.getSize();
+        ParallelOptions.numThreads = numThreads;
+        myNumVecForThread = new int[numThreads];
+        vecStartIdxForThread = new int[numThreads];
         decomposeDomain(numVec);
     }
 
@@ -39,6 +46,19 @@ public class ParallelOptions
         int rem = numVec % size;
         myNumVec = rank < rem ? div + 1 : div;
         globalVecStartIdx = rank * div + (rank < rem ? rank : rem);
+        decomposeDomainAmongThreads();
+    }
+
+    private static void decomposeDomainAmongThreads()
+    {
+        int div = myNumVec / numThreads;
+        int rem = myNumVec % numThreads;
+        IntStream.range(0, numThreads).forEach(
+            i ->
+            {
+                myNumVecForThread[i] = i < rem ? div+1 : div;
+                vecStartIdxForThread[i] = (i * div + (i < rem ? i : rem));
+            });
     }
 
     public static int[] getLengthsArray(int numVec)
