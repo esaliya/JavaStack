@@ -69,11 +69,11 @@ public class Program
             return;
         }
 
-        int n = Integer.parseInt(cmd.getOptionValue("n"));
-        int d = Integer.parseInt(cmd.getOptionValue("d"));
-        int k = Integer.parseInt(cmd.getOptionValue("k"));
-        int m = Integer.parseInt(cmd.getOptionValue("m"));
-        double t = Double.parseDouble(cmd.getOptionValue("t"));
+        int numPoints = Integer.parseInt(cmd.getOptionValue("n"));
+        int numDimensions = Integer.parseInt(cmd.getOptionValue("d"));
+        int numCenters = Integer.parseInt(cmd.getOptionValue("k"));
+        int maxIterations = Integer.parseInt(cmd.getOptionValue("m"));
+        double errorThreshold = Double.parseDouble(cmd.getOptionValue("t"));
         int numThreads = Integer.parseInt(cmd.getOptionValue("T"));
         boolean isBigEndian = Boolean.parseBoolean(cmd.getOptionValue("b"));
         String outputFile = cmd.hasOption("o") ? cmd.getOptionValue("o") : "";
@@ -82,7 +82,7 @@ public class Program
 
         try
         {
-            ParallelOptions.setupParallelism(args, n, numThreads);
+            ParallelOptions.setupParallelism(args, numPoints, numThreads);
             Stopwatch mainTimer = Stopwatch.createStarted();
             print(
                 "=== Program Started on " + dateFormat.format(new Date()) +
@@ -90,7 +90,7 @@ public class Program
             print("  Reading points ... ");
             Stopwatch timer = Stopwatch.createStarted();
             final double[][] points = readPoints(
-                pointsFile, d, ParallelOptions.globalVecStartIdx,
+                pointsFile, numDimensions, ParallelOptions.globalVecStartIdx,
                 ParallelOptions.myNumVec, isBigEndian);
             timer.stop();
             print(
@@ -98,7 +98,7 @@ public class Program
             timer.reset();
             print("  Reading centers ...");
             timer.start();
-            double[][] centers = readCenters(centersFile, k, d, isBigEndian);
+            double[][] centers = readCenters(centersFile, numCenters, numDimensions, isBigEndian);
             timer.stop();
             print(
                 "    Done in " + timer.elapsed(TimeUnit.MILLISECONDS) + " ms");
@@ -112,9 +112,9 @@ public class Program
             {
                 print("  Allocating buffers");
                 timer.start();
-                doubleBuffer = MPI.newDoubleBuffer(k * d);
-                intBuffer = MPI.newIntBuffer(k);
-                intBuffer2 = MPI.newIntBuffer(n);
+                doubleBuffer = MPI.newDoubleBuffer(numCenters * numDimensions);
+                intBuffer = MPI.newIntBuffer(numCenters);
+                intBuffer2 = MPI.newIntBuffer(numPoints);
                 timer.stop();
                 // This would be similar across
                 // all processes, so no need to do average
@@ -122,8 +122,8 @@ public class Program
                 timer.reset();
             }
 
-            final double[][][] centerSumsForThread = new double [numThreads] [k][d];
-            final int[][] pointsPerCenterForThread = new int[numThreads][k];
+            final double[][][] centerSumsForThread = new double [numThreads] [numCenters][numDimensions];
+            final int[][] pointsPerCenterForThread = new int[numThreads][numCenters];
             final int[] clusterAssignments = new int[ParallelOptions.myNumVec];
 
             resetPointsPerCenter(pointsPerCenterForThread);
@@ -135,10 +135,10 @@ public class Program
             Stopwatch commTimerWithCopy = Stopwatch.createUnstarted();
             Stopwatch commTimer = Stopwatch.createUnstarted();
             long[] times = new long[]{0, 0, 0};
-            while (!converged && itrCount < m)
+            while (!converged && itrCount < maxIterations)
             {
                 ++itrCount;
-                resetCenterSums(centerSumsForThread, d);
+                resetCenterSums(centerSumsForThread, numDimensions);
                 resetPointsPerCenter(pointsPerCenterForThread);
 
                 final double[][] immutableCenters = centers;
@@ -165,9 +165,9 @@ public class Program
                 // Sum over threads
                 // Place results to arrays of thread 0
                 for (int i = 1; i < numThreads; ++i){
-                    for (int c = 0; c < k; ++c){
+                    for (int c = 0; c < numCenters; ++c){
                         pointsPerCenterForThread[0][c] += pointsPerCenterForThread[i][c];
-                        for (int dim = 0; dim < d; ++d){
+                        for (int d = 0; d < numDimensions; ++d){
                             centerSumsForThread[0][c][d] += centerSumsForThread[i][c][d];
                         }
                     }
@@ -180,12 +180,12 @@ public class Program
                     copyToBuffer(pointsPerCenterForThread[0], intBuffer);
                     commTimer.start();
                     ParallelOptions.comm
-                        .allReduce(doubleBuffer, d * k, MPI.DOUBLE, MPI.SUM);
+                        .allReduce(doubleBuffer, numDimensions * numCenters, MPI.DOUBLE, MPI.SUM);
                     commTimer.stop();
                     copyFromBuffer(doubleBuffer, centerSumsForThread[0]);
                     commTimer.start();
                     ParallelOptions.comm
-                        .allReduce(intBuffer, k, MPI.INT, MPI.SUM);
+                        .allReduce(intBuffer, numCenters, MPI.INT, MPI.SUM);
                     commTimer.stop();
                     copyFromBuffer(intBuffer, pointsPerCenterForThread[0]);
                     commTimerWithCopy.stop();
@@ -196,14 +196,14 @@ public class Program
                 }
 
                 converged = true;
-                for (int i = 0; i < k; ++i)
+                for (int i = 0; i < numCenters; ++i)
                 {
                     double[] centerSum = centerSumsForThread[0][i];
                     int tmpI = i;
-                    IntStream.range(0, d).forEach(
+                    IntStream.range(0, numDimensions).forEach(
                         j -> centerSum[j] /= pointsPerCenterForThread[0][tmpI]);
                     double dist = getEuclideanDistance(centerSum, centers[i]);
-                    if (dist > t)
+                    if (dist > errorThreshold)
                     {
                         converged = false;
                     }
@@ -223,7 +223,7 @@ public class Program
             if (!converged)
             {
                 print(
-                    "    Stopping K-Means as max iteration count " + m +
+                    "    Stopping K-Means as max iteration count " + maxIterations +
                     " has reached");
             }
             print(
@@ -248,10 +248,10 @@ public class Program
                     // Gather cluster assignments
                     print("  Gathering cluster assignments ...");
                     timer.start();
-                    int[] lengths = ParallelOptions.getLengthsArray(n);
-                    int[] displas = new int[n];
+                    int[] lengths = ParallelOptions.getLengthsArray(numPoints);
+                    int[] displas = new int[numPoints];
                     displas[0] = 0;
-                    System.arraycopy(lengths, 0, displas, 1, n - 1);
+                    System.arraycopy(lengths, 0, displas, 1, numPoints - 1);
                     Arrays.parallelPrefix(displas, (p, q) -> p + q);
                     intBuffer2.position(ParallelOptions.globalVecStartIdx);
                     intBuffer2.put(clusterAssignments);
@@ -277,9 +277,9 @@ public class Program
                             StandardOpenOption.WRITE), true))
                     {
                         PointReader reader = PointReader
-                            .readRowRange(pointsFile, 0, n, d, isBigEndian);
-                        double[] point = new double[d];
-                        for (int i = 0; i < n; ++i)
+                            .readRowRange(pointsFile, 0, numPoints, numDimensions, isBigEndian);
+                        double[] point = new double[numDimensions];
+                        for (int i = 0; i < numPoints; ++i)
                         {
                             reader.getPoint(i, point);
                             writer.println(
