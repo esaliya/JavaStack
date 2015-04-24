@@ -45,7 +45,7 @@ public class Program
         programOptions.addOption("T", true, "Number of threads");
         programOptions.addOption("c", true, "Initial center file");
         programOptions.addOption("p", true, "Points file");
-        programOptions.addOption("o", false, "Cluster assignment output file");
+        programOptions.addOption("o", true, "Cluster assignment output file");
     }
 
     public static void main(String[] args)
