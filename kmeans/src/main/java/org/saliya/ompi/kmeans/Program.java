@@ -206,11 +206,16 @@ public class Program
                     if (dist > errorThreshold)
                     {
                         converged = false;
+                        break;
                     }
                 }
-                // Replace original center with centerSumsForThread[0],
-                // which now contains the updated centers
+                // Swap original center with centerSumsForThread[0],
+                // which now contains the updated centers. The swapping
+                // will NOT introduce even though centerSumsForThread[0] is
+                // set to old values as they will be reset before next iteration.
+                double [][] tmp = centers;
                 centers = centerSumsForThread[0];
+                centerSumsForThread[0] = tmp;
             }
             loopTimer.stop();
             times[2] = loopTimer.elapsed(TimeUnit.MILLISECONDS);
