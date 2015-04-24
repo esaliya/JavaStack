@@ -311,10 +311,13 @@ public class Program
 
     private static void resetPointsPerCenter(int[][] pointsPerCenterForThread)
     {
-        Arrays.stream(pointsPerCenterForThread).forEach(
-            threadLocalPointsPerCenter -> Arrays
-                .stream(threadLocalPointsPerCenter)
-                .forEach(center -> threadLocalPointsPerCenter[center] = 0));
+        for (int[] tmp : pointsPerCenterForThread)
+        {
+            for (int j = 0; j < tmp.length; ++j)
+            {
+                tmp[j] = 0;
+            }
+        }
     }
 
 
