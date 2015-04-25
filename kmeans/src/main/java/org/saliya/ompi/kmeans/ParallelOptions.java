@@ -4,6 +4,7 @@ import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 public class ParallelOptions
@@ -33,7 +34,6 @@ public class ParallelOptions
         vecStartIdxForThread = new int[numThreads];
         decomposeDomain(numVec);
     }
-
 
     public static void endParallelism() throws MPIException
     {

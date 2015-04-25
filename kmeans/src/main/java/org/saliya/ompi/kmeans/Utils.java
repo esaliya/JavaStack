@@ -9,12 +9,12 @@ import java.util.Arrays;
 
 public class Utils
 {
-    static final String PROGRAM_NAME = "K-Means";
-    static final String ERR_PROGRAM_ARGUMENTS_PARSING_FAILED
+    public static final String PROGRAM_NAME = "K-Means";
+    public static final String ERR_PROGRAM_ARGUMENTS_PARSING_FAILED
         = "Argument parsing failed!";
-    static final String ERR_INVALID_PROGRAM_ARGUMENTS
+    public static final String ERR_INVALID_PROGRAM_ARGUMENTS
         = "Invalid program arguments!";
-    static final String ERR_EMPTY_FILE_NAME = "File name is null or empty!";
+    public static final String ERR_EMPTY_FILE_NAME = "File name is null or empty!";
 
     /**
      * Parse command line arguments
