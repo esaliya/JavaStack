@@ -205,8 +205,9 @@ public class Program
                     double dist = getEuclideanDistance(centerSum, centers[i]);
                     if (dist > errorThreshold)
                     {
+                        // Can't break as center sums need to be divided to
+                        // form new centers
                         converged = false;
-                        break;
                     }
                 }
                 // Swap original center with centerSumsForThread[0],
