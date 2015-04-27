@@ -65,8 +65,8 @@ public class ParallelOptions
     {
         int div = numVec / size;
         int rem = numVec % size;
-        int[] lengths = new int[numVec];
-        IntStream.range(0, numVec)
+        int[] lengths = new int[size];
+        IntStream.range(0, size)
                  .forEach(i -> lengths[i] = i > rem ? div : div + 1);
         return lengths;
     }

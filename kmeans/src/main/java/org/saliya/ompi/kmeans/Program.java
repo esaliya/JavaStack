@@ -277,9 +277,9 @@ public class Program
                     print("  Gathering cluster assignments ...");
                     timer.start();
                     int[] lengths = ParallelOptions.getLengthsArray(numPoints);
-                    int[] displas = new int[numPoints];
+                    int[] displas = new int[ParallelOptions.size];
                     displas[0] = 0;
-                    System.arraycopy(lengths, 0, displas, 1, numPoints - 1);
+                    System.arraycopy(lengths, 0, displas, 1, ParallelOptions.size - 1);
                     Arrays.parallelPrefix(displas, (p, q) -> p + q);
                     intBuffer2.position(ParallelOptions.globalVecStartIdx);
                     intBuffer2.put(clusterAssignments);
