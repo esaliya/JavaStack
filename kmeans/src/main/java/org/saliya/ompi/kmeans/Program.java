@@ -268,8 +268,32 @@ public class Program
                     times[0] * 1.0 / ParallelOptions.size + " ms");
             }
 
+            // TODO test
+//            if (ParallelOptions.size > 1){
+                IntBuffer singleBuff = MPI.newIntBuffer(1);
+                for (int i = 0; i < ParallelOptions.size; ++i){
+                    if (ParallelOptions.rank == 0){
+                        singleBuff.put(0,i);
+                        ParallelOptions.comm.bcast(singleBuff, 1, MPI.INT, 0);
+                    }
+                    int r = singleBuff.get(0);
+                    if (r == ParallelOptions.rank){
+                        try (PrintWriter writer = new PrintWriter(
+                            Files.newBufferedWriter(
+                                Paths.get(outputFile), Charset.defaultCharset(),
+                                StandardOpenOption.CREATE,
+                                StandardOpenOption.WRITE), true))
+                        {
+                            for (int c : clusterAssignments){
+                                writer.println(c);
+                            }
+                        }
+                    }
+                }
+//            }
 
-            if (!Strings.isNullOrEmpty(outputFile))
+
+            /*if (!Strings.isNullOrEmpty(outputFile))
             {
                 if (ParallelOptions.size > 1)
                 {
@@ -325,7 +349,7 @@ public class Program
                         "ms");
                     timer.reset();
                 }
-            }
+            }*/
             mainTimer.stop();
             print(
                 "=== Program terminated successfully on " +
