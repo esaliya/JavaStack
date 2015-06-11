@@ -264,7 +264,7 @@ public class Program
                     times[1] * 1.0 / ParallelOptions.size +
                     " ms");
                 print(
-                    "    Avg. comm time w/ copy" +
+                    "    Avg. comm time w/ copy " +
                     times[0] * 1.0 / ParallelOptions.size + " ms");
             }
 
