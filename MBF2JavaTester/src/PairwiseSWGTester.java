@@ -3,16 +3,16 @@ import edu.indiana.salsahpc.*;
 import java.io.*;
 import java.util.List;
 
-import static edu.rice.hj.HJ.finalizeHabanero;
+/*import static edu.rice.hj.HJ.finalizeHabanero;
 import static edu.rice.hj.HJ.forall;
-import static edu.rice.hj.HJ.initializeHabanero;
+import static edu.rice.hj.HJ.initializeHabanero;*/
 
 public class PairwiseSWGTester {
-    public static void main(String[] args) throws Exception {
-        /*String file = "C:\\Users\\sekanaya\\Desktop\\swgtester2\\100k_sample_fasta_clusters_21+5_100.txt";
+    /*public static void main(String[] args) throws Exception {
+        *//*String file = "C:\\Users\\sekanaya\\Desktop\\swgtester2\\100k_sample_fasta_clusters_21+5_100.txt";
         String alignFile = "C:\\Users\\sekanaya\\Desktop\\swgtester2\\MBF2JavaSWG_alignment.txt";
         String distFile = "C:\\Users\\sekanaya\\Desktop\\swgtester2\\MBF2JavaSWG_dist.txt";
-        String lenFile = "C:\\Users\\sekanaya\\Desktop\\swgtester2\\MBF2JavaSWG_len.txt";*/
+        String lenFile = "C:\\Users\\sekanaya\\Desktop\\swgtester2\\MBF2JavaSWG_len.txt";*//*
 
         String file = "G:\\My Box Files\\SalsaBio\\millions\\phy\\lsu_w+k\\sequences\\AMF_Phylo_for_clustering_revised_599nts_set_unique_seqs.fasta";
         String distFile = "G:\\My Box Files\\SalsaBio\\millions\\phy\\lsu_w+k\\distpairwise\\swgpid\\AMF_Phylo_for_clustering_revised_599nts_set_unique_seqs_swgms_pid_831_myjava.bin";
@@ -68,7 +68,7 @@ public class PairwiseSWGTester {
 //        writer.flush();
 //        writer.close();
         System.out.println("Done.");
-    }
+    }*/
 
     public static float computePercentIdentityDistance(AlignedData ad) {
         Sequence alignedSeqA = ad.getFirstAlignedSequence();
