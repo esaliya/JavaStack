@@ -61,7 +61,7 @@ public class Program {
     public static DoubleBuffer allGather(
         DoubleBuffer partialPointBuffer, DoubleBuffer fullBuffer, int dimension, int procRowCount) throws MPIException {
 
-        int [] lengths = getLengthsArray(procCount);
+        int [] lengths = getLengthsArray(procCount, dimension);
 
         /*int [] lengths = new int[procCount];
         int length = procRowCount * dimension;
@@ -76,11 +76,11 @@ public class Program {
         return  fullBuffer;
     }
 
-    private static int[] getLengthsArray(int procCount) {
+    private static int[] getLengthsArray(int procCount, int dimension) {
         int q = pointCount/procCount;
         int r = pointCount%procCount;
         int [] lengths = new int[procCount];
-        IntStream.range(0,procCount).forEach(i->lengths[i] = i < r ? q+1 : q);
+        IntStream.range(0,procCount).forEach(i->lengths[i] = dimension *(i < r ? q+1 : q));
         return lengths;
     }
 
