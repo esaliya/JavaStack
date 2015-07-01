@@ -33,8 +33,8 @@ public class Program {
 
         long time = 0;
         Stopwatch timer = Stopwatch.createUnstarted();
-        DoubleBuffer partialBuffer = MPI.newDoubleBuffer(myPointCount);
-        DoubleBuffer fullBuffer = MPI.newDoubleBuffer(pointCount);
+        DoubleBuffer partialBuffer = MPI.newDoubleBuffer(myPointCount*dimension);
+        DoubleBuffer fullBuffer = MPI.newDoubleBuffer(pointCount*dimension);
         for (int i = 0; i < iter; ++i) {
             generateRandomPoints(myPointCount, dimension, partialBuffer);
             timer.start();
