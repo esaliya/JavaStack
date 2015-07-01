@@ -15,8 +15,11 @@ public class Program {
     static int procCount;
     static Intracomm procComm;
 
+    static int pointCount;
+
+
     public static void main(String[] args) throws MPIException {
-        int pointCount = Integer.parseInt(args[0]);
+        pointCount = Integer.parseInt(args[0]);
         int dimension = Integer.parseInt(args[1]);
         int iter = Integer.parseInt(args[2]);
         MPI.Init(args);
@@ -58,17 +61,27 @@ public class Program {
     public static DoubleBuffer allGather(
         DoubleBuffer partialPointBuffer, DoubleBuffer fullBuffer, int dimension, int procRowCount) throws MPIException {
 
-        int [] lengths = new int[procCount];
+        int [] lengths = getLengthsArray(procCount);
+
+        /*int [] lengths = new int[procCount];
         int length = procRowCount * dimension;
         lengths[procRank] = length;
-        procComm.allGather(lengths, 1, MPI.INT);
+        procComm.allGather(lengths, 1, MPI.INT);*/
         int [] displas = new int[procCount];
         displas[0] = 0;
         System.arraycopy(lengths, 0, displas, 1, procCount - 1);
         Arrays.parallelPrefix(displas, (m, n) -> m + n);
         int count = IntStream.of(lengths).sum(); // performs very similar to usual for loop, so no harm done
-        procComm.allGatherv(partialPointBuffer, length, MPI.DOUBLE, fullBuffer, lengths, displas, MPI.DOUBLE);
+        procComm.allGatherv(partialPointBuffer, lengths[procRank], MPI.DOUBLE, fullBuffer, lengths, displas, MPI.DOUBLE);
         return  fullBuffer;
+    }
+
+    private static int[] getLengthsArray(int procCount) {
+        int q = pointCount/procCount;
+        int r = pointCount%procCount;
+        int [] lengths = new int[procCount];
+        IntStream.range(0,procCount).forEach(i->lengths[i] = i < r ? q+1 : q);
+        return lengths;
     }
 
     private static void generateRandomPoints(
