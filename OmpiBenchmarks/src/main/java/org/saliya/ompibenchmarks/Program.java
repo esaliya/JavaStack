@@ -72,6 +72,7 @@ public class Program {
         System.arraycopy(lengths, 0, displas, 1, procCount - 1);
         Arrays.parallelPrefix(displas, (m, n) -> m + n);
         int count = IntStream.of(lengths).sum(); // performs very similar to usual for loop, so no harm done
+        procComm.barrier();
         procComm.allGatherv(partialPointBuffer, lengths[procRank], MPI.DOUBLE, fullBuffer, lengths, displas, MPI.DOUBLE);
         return  fullBuffer;
     }
