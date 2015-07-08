@@ -40,11 +40,7 @@ public class Program {
         DoubleBuffer fullBuffer = MPI.newDoubleBuffer(pointCount*dimension);
         for (int i = 0; i < iter; ++i) {
             generateRandomPoints(myPointCount, dimension, partialBuffer);
-            timer.start();
-            fullBuffer = allGather(partialBuffer, fullBuffer, dimension, myPointCount);
-            timer.stop();
-            time += timer.elapsed(TimeUnit.MILLISECONDS);
-            timer.reset();
+            time += allGather(partialBuffer, fullBuffer, dimension, myPointCount, timer);
         }
 
         printMessage("Allgatherv time: " + time  + " ms");
@@ -58,8 +54,9 @@ public class Program {
         System.out.println(msg);
     }
 
-    public static DoubleBuffer allGather(
-        DoubleBuffer partialPointBuffer, DoubleBuffer fullBuffer, int dimension, int procRowCount) throws MPIException {
+    public static long allGather(
+        DoubleBuffer partialPointBuffer, DoubleBuffer fullBuffer, int dimension,
+        int procRowCount, Stopwatch timer) throws MPIException {
 
         int [] lengths = getLengthsArray(procCount, dimension);
 
@@ -72,8 +69,13 @@ public class Program {
         System.arraycopy(lengths, 0, displas, 1, procCount - 1);
         Arrays.parallelPrefix(displas, (m, n) -> m + n);
         int count = IntStream.of(lengths).sum(); // performs very similar to usual for loop, so no harm done
+        timer.start();
         procComm.allGatherv(partialPointBuffer, lengths[procRank], MPI.DOUBLE, fullBuffer, lengths, displas, MPI.DOUBLE);
-        return  fullBuffer;
+        timer.stop();
+        long elapsedMills = timer.elapsed(TimeUnit.MILLISECONDS);
+        timer.reset();
+
+        return  elapsedMills;
     }
 
     private static int[] getLengthsArray(int procCount, int dimension) {
