@@ -1,10 +1,8 @@
 package org.saliya.ompibenchmarks;
-
 import com.google.common.base.Stopwatch;
 import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
-
 import java.nio.DoubleBuffer;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -14,67 +12,49 @@ public class Program {
     static int procRank;
     static int procCount;
     static Intracomm procComm;
-
     static int pointCount;
-
 
     public static void main(String[] args) throws MPIException {
         pointCount = Integer.parseInt(args[0]);
         int dimension = Integer.parseInt(args[1]);
         int iter = Integer.parseInt(args[2]);
         MPI.Init(args);
-
         procComm = MPI.COMM_WORLD;
         procRank = procComm.getRank();
         procCount = procComm.getSize();
-
         int q = pointCount / procCount;
         int r = pointCount % procCount;
-
         int myPointCount = r > 0 && procRank < r ? q+1 : q;
-
-
         long time = 0;
         Stopwatch timer = Stopwatch.createUnstarted();
         DoubleBuffer partialBuffer = MPI.newDoubleBuffer(myPointCount*dimension);
         DoubleBuffer fullBuffer = MPI.newDoubleBuffer(pointCount*dimension);
         for (int i = 0; i < iter; ++i) {
             generateRandomPoints(myPointCount, dimension, partialBuffer);
-            time += allGather(partialBuffer, fullBuffer, dimension, myPointCount, timer);
+            time += allGather(partialBuffer, fullBuffer, dimension, timer);
         }
-
         printMessage("Allgatherv time: " + time  + " ms");
         MPI.Finalize();
     }
 
     public static void printMessage(String msg) {
-        if (procRank != 0) {
-            return;
-        }
+        if (procRank != 0) return;
         System.out.println(msg);
     }
 
     public static long allGather(
-        DoubleBuffer partialPointBuffer, DoubleBuffer fullBuffer, int dimension,
-        int procRowCount, Stopwatch timer) throws MPIException {
-
+        DoubleBuffer partialPointBuffer, DoubleBuffer fullBuffer, int dimension, Stopwatch timer) throws MPIException {
         int [] lengths = getLengthsArray(procCount, dimension);
-
-        /*int [] lengths = new int[procCount];
-        int length = procRowCount * dimension;
-        lengths[procRank] = length;
-        procComm.allGather(lengths, 1, MPI.INT);*/
         int [] displas = new int[procCount];
         displas[0] = 0;
         System.arraycopy(lengths, 0, displas, 1, procCount - 1);
         Arrays.parallelPrefix(displas, (m, n) -> m + n);
-        int count = IntStream.of(lengths).sum(); // performs very similar to usual for loop, so no harm done
+
         timer.start();
         procComm.allGatherv(partialPointBuffer, lengths[procRank], MPI.DOUBLE, fullBuffer, lengths, displas, MPI.DOUBLE);
         timer.stop();
         long elapsedMills = timer.elapsed(TimeUnit.MILLISECONDS);
         timer.reset();
-
         return  elapsedMills;
     }
 
