@@ -50,8 +50,16 @@ public class Program {
         System.arraycopy(lengths, 0, displas, 1, procCount - 1);
         Arrays.parallelPrefix(displas, (m, n) -> m + n);
 
+        fullBuffer.position(displas[procRank]);
+        partialPointBuffer.position(0);
+        fullBuffer.put(partialPointBuffer);
+
         timer.start();
-        procComm.allGatherv(partialPointBuffer, lengths[procRank], MPI.DOUBLE, fullBuffer, lengths, displas, MPI.DOUBLE);
+        // with separate send and recv buffers
+//        procComm.allGatherv(partialPointBuffer, lengths[procRank], MPI.DOUBLE, fullBuffer, lengths, displas, MPI.DOUBLE);
+
+        // with inplace
+        procComm.allGatherv(fullBuffer, lengths, displas, MPI.DOUBLE);
         timer.stop();
         long elapsedMills = timer.elapsed(TimeUnit.MILLISECONDS);
         timer.reset();
