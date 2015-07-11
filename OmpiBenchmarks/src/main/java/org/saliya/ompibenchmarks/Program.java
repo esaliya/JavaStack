@@ -54,6 +54,15 @@ public class Program {
         partialPointBuffer.position(0);
         fullBuffer.put(partialPointBuffer);
 
+        /* Let's add a busy wait loop to keep things running */
+        int i = 0;
+        long x = 0;
+        while (i < Integer.MAX_VALUE){
+            x += (long)Math.sqrt(20);
+            ++i;
+        }
+
+
         timer.start();
         // with separate send and recv buffers
 //        procComm.allGatherv(partialPointBuffer, lengths[procRank], MPI.DOUBLE, fullBuffer, lengths, displas, MPI.DOUBLE);
