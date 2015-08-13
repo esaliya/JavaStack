@@ -29,7 +29,7 @@ public class Program {
     private static String opBlockSize = "blockSize";
     private static String opPrintFreq = "printFreq";
     private static String opInitialPoints = "initialPoints";
-    private static String upOutDir = "outputDir";
+    private static String opOutDir = "outputDir";
     private static Options options = new Options();
     static {
         options.addOption(opDataPoints, true, "Number of data points");
@@ -42,7 +42,7 @@ public class Program {
         options.addOption(opBlockSize, true, "Block size");
         options.addOption(opPrintFreq, true, "Print frequency");
         options.addOption(opInitialPoints, true, "Initial points file");
-        options.addOption(upOutDir, true, "Outupt dir");
+        options.addOption(opOutDir, true, "Outupt dir");
     }
 
     static int targetDimension = 3;
@@ -76,7 +76,7 @@ public class Program {
         int blockSize = cmd.hasOption(opBlockSize) ? Integer.parseInt(cmd.getOptionValue(opIterations)) : 64;
         int printFreq = cmd.hasOption(opPrintFreq) ? Integer.parseInt(cmd.getOptionValue(opPrintFreq)) : 100;
         String initialPointsFile = cmd.hasOption(opInitialPoints) ? cmd.getOptionValue(opInitialPoints) : "";
-        String outDir = cmd.hasOption(upOutDir) ? cmd.getOptionValue(upOutDir) : ".";
+        String outDir = cmd.hasOption(opOutDir) ? cmd.getOptionValue(opOutDir) : ".";
 
         int worldSize = ppn * n;
         int globalColCount = dataPoints;
