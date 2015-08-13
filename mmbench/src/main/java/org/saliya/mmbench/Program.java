@@ -98,7 +98,7 @@ public class Program {
             dataPoints, targetDimension): readInitMapping(initialPointsFile, dataPoints, targetDimension);
         short[][] weights = generateWeights(threadRowCount, globalColCount, 1.0);
 
-        Path outputFile = Paths.get(outDir, "mmout." + tpp + "x" + ppn + "x" + n + "." + dataPoints + ".r=" + rank  +".t=" + thread + "." + getMachineName() + ".txt");
+        Path outputFile = Paths.get(outDir, "mmout." + tpp + "x" + ppn + "x" + n + "." + dataPoints + ".r" + rank  +".t" + thread + "." + getMachineName() + ".txt");
         BufferedWriter bw = Files.newBufferedWriter(
             outputFile, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
         PrintWriter writer = new PrintWriter(bw, true);
