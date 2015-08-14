@@ -108,6 +108,9 @@ public class Program {
             if (i % printFreq == 0){
                 System.out.print(" Iterations [" + i + "," + (printFreq + i - 1) + "] ... " );
             }
+            // Just checking if creating a new array each time as in DAMDS will produce the same effect
+            x = Strings.isNullOrEmpty(initialPointsFile) ? generateInitMapping(
+                dataPoints, targetDimension): readInitMapping(initialPointsFile, dataPoints, targetDimension);
             timer.start();
             double [][] result = matrixMultiplyWithThreadOffset(weights, v, x, threadRowCount, targetDimension, dataPoints, blockSize, threadRowOffset, procRowOffset);
             timer.stop();
