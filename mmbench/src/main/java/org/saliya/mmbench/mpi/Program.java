@@ -176,13 +176,13 @@ public class Program {
         int [] lengths = new int[realProcCount];
         int length = mimicRowCount * dimension;
         lengths[realProcRank] = length;
-        realProcComm.allGather(lengths, 1, MPI.INT);
+//        realProcComm.allGather(lengths, 1, MPI.INT);
         int [] displas = new int[realProcCount];
         displas[0] = 0;
         System.arraycopy(lengths, 0, displas, 1, realProcCount - 1);
         Arrays.parallelPrefix(displas, (m, n) -> m + n);
         int count = IntStream.of(lengths).sum(); // performs very similar to usual for loop, so no harm done
-        realProcComm.allGatherv(partialPointBuffer, length, MPI.DOUBLE, fullPointBuffer, lengths, displas, MPI.DOUBLE);
+//        realProcComm.allGatherv(partialPointBuffer, length, MPI.DOUBLE, fullPointBuffer, lengths, displas, MPI.DOUBLE);
         return  fullPointBuffer;
     }
 
