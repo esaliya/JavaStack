@@ -3,9 +3,6 @@ package org.saliya.mmbench.mpi;
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
-import mpi.Intracomm;
-import mpi.MPI;
-import mpi.MPIException;
 import org.apache.commons.cli.*;
 
 import java.io.*;
@@ -53,11 +50,11 @@ public class Program {
     static int targetDimension = 3;
 
     public static void main(String[] args)
-        throws IOException, InterruptedException, MPIException {
-        args = MPI.Init(args);
-        Intracomm realProcComm = MPI.COMM_WORLD;
-        int realProcCount = realProcComm.getSize();
-        int realProcRank = realProcComm.getRank();
+        throws IOException, InterruptedException {
+//        args = MPI.Init(args);
+//        Intracomm realProcComm = MPI.COMM_WORLD;
+//        int realProcCount = realProcComm.getSize();
+//        int realProcRank = realProcComm.getRank();
 
         Optional<CommandLine> parserResult =
             parseCommandLineArguments(args, options);
@@ -72,9 +69,9 @@ public class Program {
         System.out.println("\n== " + programName + " run started on " + new Date() + " ==\n");
         CommandLine cmd = parserResult.get();
         if (!(cmd.hasOption(opDataPoints) && cmd.hasOption(opT) && cmd.hasOption(opP) && cmd.hasOption(opN) && cmd.hasOption(opRank) && cmd.hasOption(opThread) && cmd.hasOption(opIterations))){
-            if (realProcRank == 0){
-                new HelpFormatter().printHelp(programName, options);
-            }
+//            if (realProcRank == 0){
+//                new HelpFormatter().printHelp(programName, options);
+//            }
             return;
         }
 
@@ -83,8 +80,8 @@ public class Program {
         int mimicPpn = Integer.parseInt(cmd.getOptionValue(opP));
         int mimicN = Integer.parseInt(cmd.getOptionValue(opN));
         // For now let's take rank as real proc rank
-        int rank = realProcRank;
-//        int rank = Integer.parseInt(cmd.getOptionValue(opRank));
+//        int rank = realProcRank;
+        int rank = Integer.parseInt(cmd.getOptionValue(opRank));
         int thread = Integer.parseInt(cmd.getOptionValue(opThread));
         int iterations = Integer.parseInt(cmd.getOptionValue(opIterations));
         int blockSize = cmd.hasOption(opBlockSize) ? Integer.parseInt(
@@ -160,7 +157,7 @@ public class Program {
         writer.flush();
         writer.close();
 
-        MPI.Finalize();
+//        MPI.Finalize();
     }
 
     private static void copyPointsToBuffer(double[][] points, DoubleBuffer result){
@@ -170,7 +167,7 @@ public class Program {
         }
     }
 
-    private static DoubleBuffer allGather(
+    /*private static DoubleBuffer allGather(
         DoubleBuffer partialPointBuffer, DoubleBuffer fullPointBuffer, int dimension, Intracomm realProcComm, int realProcRank, int realProcCount, int mimicRowCount) throws MPIException {
 
         int [] lengths = new int[realProcCount];
@@ -184,7 +181,7 @@ public class Program {
         int count = IntStream.of(lengths).sum(); // performs very similar to usual for loop, so no harm done
 //        realProcComm.allGatherv(partialPointBuffer, length, MPI.DOUBLE, fullPointBuffer, lengths, displas, MPI.DOUBLE);
         return  fullPointBuffer;
-    }
+    }*/
 
     private static double[] getTotalAndAverageTiming(
         long[] timings, int startInc, int endInc) {
