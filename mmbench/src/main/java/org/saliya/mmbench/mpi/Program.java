@@ -109,8 +109,8 @@ public class Program {
         int mimicThreadRowCount = thread < r ? q+1 : q;
         int mimicThreadRowOffset = thread * q + (thread < r ? thread : r);
 
-        DoubleBuffer partialPointsBuffer = MPI.newDoubleBuffer(mimicThreadRowCount * targetDimension);
-        DoubleBuffer fullPointsBuffer = MPI.newDoubleBuffer(mimicThreadRowCount * realProcCount * targetDimension);
+//        DoubleBuffer partialPointsBuffer = MPI.newDoubleBuffer(mimicThreadRowCount * targetDimension);
+//        DoubleBuffer fullPointsBuffer = MPI.newDoubleBuffer(mimicThreadRowCount * realProcCount * targetDimension);
 
         double[] v = generateDiagonalValues(globalColCount, mimicProcRowCount);
         double[][] x ;
@@ -137,10 +137,10 @@ public class Program {
             timer.stop();
             timings[i] = timer.elapsed(TimeUnit.MILLISECONDS);
             timer.reset();
-            copyPointsToBuffer(result, partialPointsBuffer);
-            allGather(partialPointsBuffer, fullPointsBuffer, targetDimension, realProcComm, realProcRank, realProcCount, mimicThreadRowCount);
-            dummyPrint(fullPointsBuffer);
-
+//            copyPointsToBuffer(result, partialPointsBuffer);
+//            allGather(partialPointsBuffer, fullPointsBuffer, targetDimension, realProcComm, realProcRank, realProcCount, mimicThreadRowCount);
+//            dummyPrint(fullPointsBuffer);
+            dummyPrint(x);
             if ((i+1) % printFreq == 0){
                 double[] totAndAvg = getTotalAndAverageTiming(timings, i - (printFreq - 1), i);
                 System.out.println("Done. Total: " + totAndAvg[0] + " ms Avg: " + totAndAvg[1] + " ms");
