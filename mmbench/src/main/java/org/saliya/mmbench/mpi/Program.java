@@ -82,7 +82,9 @@ public class Program {
         int mimicTpp = Integer.parseInt(cmd.getOptionValue(opT));
         int mimicPpn = Integer.parseInt(cmd.getOptionValue(opP));
         int mimicN = Integer.parseInt(cmd.getOptionValue(opN));
-        int rank = Integer.parseInt(cmd.getOptionValue(opRank));
+        // For now let's take rank as real proc rank
+        int rank = realProcRank;
+//        int rank = Integer.parseInt(cmd.getOptionValue(opRank));
         int thread = Integer.parseInt(cmd.getOptionValue(opThread));
         int iterations = Integer.parseInt(cmd.getOptionValue(opIterations));
         int blockSize = cmd.hasOption(opBlockSize) ? Integer.parseInt(
