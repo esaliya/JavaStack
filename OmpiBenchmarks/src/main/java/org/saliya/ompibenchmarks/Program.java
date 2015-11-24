@@ -3,7 +3,11 @@ import com.google.common.base.Stopwatch;
 import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
+
+import java.io.BufferedWriter;
 import java.nio.DoubleBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -33,12 +37,11 @@ public class Program {
             generateRandomPoints(myPointCount, dimension, partialBuffer);
             time += allGather(partialBuffer, fullBuffer, dimension, timer);
         }
-        printMessage("Allgatherv time: " + time  + " ms");
+        printMessage("R\t" + procRank + "\t TotalTime(ms)\t" + time + "\tItr\t" + iter + "\tMyPoints\t" + myPointCount + "\tMyBytes\t" + (myPointCount*dimension*Double.BYTES));
         MPI.Finalize();
     }
 
     public static void printMessage(String msg) {
-        if (procRank != 0) return;
         System.out.println(msg);
     }
 
@@ -54,21 +57,14 @@ public class Program {
         partialPointBuffer.position(0);
         fullBuffer.put(partialPointBuffer);
 
-        /* Let's add a busy wait loop to keep things running */
-        int i = 0;
-        long x = 0;
-        while (i < Integer.MAX_VALUE){
-            x += (long)Math.sqrt(20);
-            ++i;
-        }
-
-
+        /* Let's add a barrier for cleaner timing */
+        procComm.barrier();
         timer.start();
         // with separate send and recv buffers
-//        procComm.allGatherv(partialPointBuffer, lengths[procRank], MPI.DOUBLE, fullBuffer, lengths, displas, MPI.DOUBLE);
+        procComm.allGatherv(partialPointBuffer, lengths[procRank], MPI.DOUBLE, fullBuffer, lengths, displas, MPI.DOUBLE);
 
         // with inplace
-        procComm.allGatherv(fullBuffer, lengths, displas, MPI.DOUBLE);
+//        procComm.allGatherv(fullBuffer, lengths, displas, MPI.DOUBLE);
         timer.stop();
         long elapsedMills = timer.elapsed(TimeUnit.MILLISECONDS);
         timer.reset();
