@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -57,7 +58,8 @@ public class Program {
         if (procRank != 0){
             procComm.recv(flag, 1, MPI.BYTE, procRank-1, 99);
         }
-        try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(fname))){
+        try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(fname),
+            StandardOpenOption.APPEND, StandardOpenOption.CREATE)){
             PrintWriter printWriter = new PrintWriter(bw, true);
             printWriter.append(msg).append("\n");
         }
