@@ -5,6 +5,9 @@ import mpi.MPI;
 import mpi.MPIException;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -22,6 +25,7 @@ public class Program {
         pointCount = Integer.parseInt(args[0]);
         int dimension = Integer.parseInt(args[1]);
         int iter = Integer.parseInt(args[2]);
+        String fname = args[3];
         MPI.Init(args);
         procComm = MPI.COMM_WORLD;
         procRank = procComm.getRank();
@@ -37,12 +41,33 @@ public class Program {
             generateRandomPoints(myPointCount, dimension, partialBuffer);
             time += allGather(partialBuffer, fullBuffer, dimension, timer);
         }
-        printMessage("R\t" + procRank + "\t TotalTime(ms)\t" + time + "\tItr\t" + iter + "\tMyPoints\t" + myPointCount + "\tMyBytes\t" + (myPointCount*dimension*Double.BYTES));
+        final String msg = "R\t" + procRank + "\t TotalTime(ms)\t" + time
+                           + "\tItr\t" + iter + "\tMyPoints\t" + myPointCount
+                           + "\tMyBytes\t" + (myPointCount * dimension
+                                              * Double.BYTES);
+        printMessage(msg, procComm, procRank, procCount, fname);
         MPI.Finalize();
     }
 
-    public static void printMessage(String msg) {
-        System.out.println(msg);
+    public static void printMessage(String msg, Intracomm procComm, int procRank, int procCount, String fname)
+
+        throws MPIException {
+        ByteBuffer flag = MPI.newByteBuffer(1);
+        flag.put((byte)1);
+        if (procRank != 0){
+            procComm.recv(flag, 1, MPI.BYTE, procRank-1, 99);
+        }
+        try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(fname))){
+            PrintWriter printWriter = new PrintWriter(bw, true);
+            printWriter.append(msg).append("\n");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (procRank != procCount -1)
+        {
+            procComm.send(flag, 1, MPI.BYTE, procRank+1, 99);
+        }
     }
 
     public static long allGather(
