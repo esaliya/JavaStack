@@ -11,15 +11,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.text.DecimalFormat;
 import java.util.regex.Pattern;
+
+import static java.lang.Integer.*;
 
 public class DataConverter {
     private static Options programOptions = new Options();
 
     static {
         programOptions.addOption("i", true, "Input file");
-        programOptions.addOption("n", true, "Number of points");
         programOptions.addOption("d", true, "Dimensionality");
         programOptions.addOption("b", true, "Is big-endian?");
         programOptions.addOption("o", true, "Output directory");
@@ -35,7 +35,7 @@ public class DataConverter {
         }
 
         CommandLine cmd = parserResult.get();
-        if (!(cmd.hasOption("i") && cmd.hasOption("n") && cmd.hasOption("d") &&
+        if (!(cmd.hasOption("i") && cmd.hasOption("d") &&
               cmd.hasOption("o") && cmd.hasOption("b"))) {
             System.out.println(Utils.ERR_INVALID_PROGRAM_ARGUMENTS);
             new HelpFormatter().printHelp(Utils.PROGRAM_NAME, programOptions);
@@ -43,19 +43,18 @@ public class DataConverter {
         }
 
         String file = cmd.getOptionValue("i");
-        int n = Integer.parseInt(cmd.getOptionValue("n"));
-        int d = Integer.parseInt(cmd.getOptionValue("d"));
+        int d = parseInt(cmd.getOptionValue("d"));
         boolean isBigEndian = Boolean.parseBoolean(cmd.getOptionValue("b"));
         String outputDir = cmd.getOptionValue("o");
 
 
         convertToBinary(
-            file, n, d, isBigEndian, outputDir);
+            file, d, isBigEndian, outputDir);
 
     }
 
     private static void convertToBinary(
-        String file, int n, int d, boolean isBigEndian, String outputDir)
+        String file, int d, boolean isBigEndian, String outputDir)
         throws IOException {
         String name = com.google.common.io.Files.getNameWithoutExtension(file);
         Path outFile = Paths.get(outputDir, name+".bin");
