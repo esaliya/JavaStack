@@ -19,8 +19,8 @@ public class InterProcComm {
         int rank = comm.getRank();
         int size = comm.getSize();
 
-        String mmapScratchDir = "/scratch/sekanaya";
-        String ZmmapCollectiveFileName = MPI.getProcessorName() + ".mmapId." + 0 + ".ZmmapCollective.bin";
+        String mmapScratchDir = "/dev/shm/sekanaya";
+        String ZmmapCollectiveFileName = MPI.getProcessorName() + ".test." + 0 + ".mmapipc.bin";
         try (FileChannel ZmmapCollectiveFc = FileChannel
                 .open(Paths.get(mmapScratchDir, ZmmapCollectiveFileName),
                         StandardOpenOption.CREATE, StandardOpenOption.READ,
