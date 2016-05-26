@@ -3,7 +3,15 @@ import com.google.common.base.Stopwatch;
 import mpi.Intracomm;
 import mpi.MPI;
 import mpi.MPIException;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -18,6 +26,7 @@ public class Program {
         pointCount = Integer.parseInt(args[0]);
         int dimension = Integer.parseInt(args[1]);
         int iter = Integer.parseInt(args[2]);
+        String fname = args[3];
         MPI.Init(args);
         procComm = MPI.COMM_WORLD;
         procRank = procComm.getRank();
@@ -33,13 +42,34 @@ public class Program {
             generateRandomPoints(myPointCount, dimension, partialBuffer);
             time += allGather(partialBuffer, fullBuffer, dimension, timer);
         }
-        printMessage("Allgatherv time: " + time  + " ms");
+        final String msg = "R\t" + procRank + "\t TotalTime(ms)\t" + time
+                           + "\tItr\t" + iter + "\tMyPoints\t" + myPointCount
+                           + "\tMyBytes\t" + (myPointCount * dimension
+                                              * Double.BYTES);
+        printMessage(msg, procComm, procRank, procCount, fname);
         MPI.Finalize();
     }
 
-    public static void printMessage(String msg) {
-        if (procRank != 0) return;
-        System.out.println(msg);
+    public static void printMessage(String msg, Intracomm procComm, int procRank, int procCount, String fname)
+
+        throws MPIException {
+        ByteBuffer flag = MPI.newByteBuffer(1);
+        flag.put((byte)1);
+        if (procRank != 0){
+            procComm.recv(flag, 1, MPI.BYTE, procRank-1, 99);
+        }
+        try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(fname),
+            StandardOpenOption.APPEND, StandardOpenOption.CREATE)){
+            PrintWriter printWriter = new PrintWriter(bw, true);
+            printWriter.append(msg).append("\n");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (procRank != procCount -1)
+        {
+            procComm.send(flag, 1, MPI.BYTE, procRank+1, 99);
+        }
     }
 
     public static long allGather(
@@ -54,21 +84,14 @@ public class Program {
         partialPointBuffer.position(0);
         fullBuffer.put(partialPointBuffer);
 
-        /* Let's add a busy wait loop to keep things running */
-        int i = 0;
-        long x = 0;
-        while (i < Integer.MAX_VALUE){
-            x += (long)Math.sqrt(20);
-            ++i;
-        }
-
-
+        /* Let's add a barrier for cleaner timing */
+        procComm.barrier();
         timer.start();
         // with separate send and recv buffers
-//        procComm.allGatherv(partialPointBuffer, lengths[procRank], MPI.DOUBLE, fullBuffer, lengths, displas, MPI.DOUBLE);
+        procComm.allGatherv(partialPointBuffer, lengths[procRank], MPI.DOUBLE, fullBuffer, lengths, displas, MPI.DOUBLE);
 
         // with inplace
-        procComm.allGatherv(fullBuffer, lengths, displas, MPI.DOUBLE);
+//        procComm.allGatherv(fullBuffer, lengths, displas, MPI.DOUBLE);
         timer.stop();
         long elapsedMills = timer.elapsed(TimeUnit.MILLISECONDS);
         timer.reset();
