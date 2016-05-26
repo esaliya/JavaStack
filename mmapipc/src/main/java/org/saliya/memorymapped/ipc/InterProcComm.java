@@ -33,7 +33,8 @@ public class InterProcComm {
             readBytes = ByteBufferBytes.wrap(ZmmapCollectiveFc.map(
                     FileChannel.MapMode.READ_WRITE, mmapCollectiveReadByteOffset,
                     ZmmapCollectiveReadByteExtent));
-            readByteBuffer = readBytes.sliceAsByteBuffer(readByteBuffer);
+            /*readByteBuffer = readBytes.sliceAsByteBuffer(readByteBuffer);*/
+            readByteBuffer = MPI.newByteBuffer(ZmmapCollectiveReadByteExtent);
         }
 
 
