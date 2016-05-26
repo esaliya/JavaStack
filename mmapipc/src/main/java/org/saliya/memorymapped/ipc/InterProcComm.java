@@ -46,7 +46,9 @@ public class InterProcComm {
 
         if (rank == 3) {
             readByteBuffer.putInt(Integer.BYTES, rank);
+            Thread.sleep(1000);
             System.out.println(readByteBuffer.getInt(Integer.BYTES));
+            System.out.println(readBytes.readInt(Integer.BYTES));
 
             /*readBytes.writeInt(2 * rank * Integer.BYTES, rank);
             readBytes.writeInt((2 * rank + 1) * Integer.BYTES, 53);
