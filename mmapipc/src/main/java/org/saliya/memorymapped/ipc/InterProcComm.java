@@ -58,7 +58,8 @@ public class InterProcComm {
         readByteBuffer.putInt(0, rank);
         readByteBuffer.putInt(Integer.BYTES, 53);
 
-        comm.allGather(readByteBuffer, 2*Integer.BYTES, MPI.BYTE);
+        ByteBuffer recv = MPI.newByteBuffer(size*2*Integer.BYTES);
+        comm.allGather(readByteBuffer, 2*Integer.BYTES, MPI.BYTE, recv, 2*Integer.BYTES, MPI.BYTE);
         if (rank == 13){
             for (int i = 0; i < size; ++i){
                 System.out.println("-- " + readByteBuffer.getInt(2*i*Integer.BYTES) + " " +readByteBuffer.getInt((2*i+1)*Integer.BYTES));
