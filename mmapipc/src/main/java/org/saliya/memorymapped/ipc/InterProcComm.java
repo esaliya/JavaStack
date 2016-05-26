@@ -33,24 +33,15 @@ public class InterProcComm {
             readBytes = ByteBufferBytes.wrap(ZmmapCollectiveFc.map(
                     FileChannel.MapMode.READ_WRITE, mmapCollectiveReadByteOffset,
                     ZmmapCollectiveReadByteExtent));
-            readBytes.position(0);
             readByteBuffer = readBytes.sliceAsByteBuffer(readByteBuffer);
-
-            /*if (isMmapLead){
-                for (int i = 0; i < ZmmapCollectiveReadByteExtent; ++i)
-                    readBytes.writeByte(i,0);
-            }*/
         }
 
 
 
-        if (rank == 3) {
-            readByteBuffer.putInt(Integer.BYTES, rank);
-            Thread.sleep(1000);
-            System.out.println(readByteBuffer.getInt(Integer.BYTES));
-            System.out.println(readBytes.readInt(Integer.BYTES));
+        readByteBuffer.putInt(2*rank*Integer.BYTES, rank);
+        readByteBuffer.putInt((2*rank+1)*Integer.BYTES, 53);
 
-            /*readBytes.writeInt(2 * rank * Integer.BYTES, rank);
+        /*readBytes.writeInt(2 * rank * Integer.BYTES, rank);
             readBytes.writeInt((2 * rank + 1) * Integer.BYTES, 53);
 
             System.out.println("@@ Rank " + rank + " r fromBytes " +
@@ -58,21 +49,16 @@ public class InterProcComm {
                     " r fromBuffer " +
                     readByteBuffer.getInt(2 * rank * Integer.BYTES));*/
 
-        }
         comm.barrier();
-        /*if (rank == 3) {
+        if (rank == 3) {
             for (int i = 0; i < size; ++i) {
                 System.out.println(
                         "++ r " + readBytes.readInt(2 * i * Integer.BYTES) +
                                 " v " +
-                                readBytes.readInt((2 * i + 1) * Integer.BYTES) +
-
-                                "** r " + readByteBuffer.getInt(2 * i * Integer.BYTES) +
-                                " v " + readByteBuffer.getInt(
-                                (2 * i + 1) * Integer.BYTES));
+                                readBytes.readInt((2 * i + 1) * Integer.BYTES));
 
             }
-        }*/
+        }
 
         MPI.Finalize();
     }
