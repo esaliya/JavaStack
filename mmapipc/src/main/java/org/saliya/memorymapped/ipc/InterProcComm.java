@@ -14,6 +14,8 @@ import java.util.Arrays;
 public class InterProcComm {
     static Bytes readBytes;
     static ByteBuffer readByteBuffer;
+    static Bytes writeBytes;
+    static ByteBuffer writeByteBuffer;
     public static void main(String[] args) throws Exception {
         MPI.Init(args);
         Intracomm comm = MPI.COMM_WORLD;
@@ -21,21 +23,30 @@ public class InterProcComm {
         int size = comm.getSize();
 
         String mmapScratchDir = "/dev/shm/sekanaya";
-        String ZmmapCollectiveFileName = MPI.getProcessorName() + ".test." + 0 + ".mmapipc.bin";
-        try (FileChannel ZmmapCollectiveFc = FileChannel
-                .open(Paths.get(mmapScratchDir, ZmmapCollectiveFileName),
+        String collWriteFileName = MPI.getProcessorName() + ".test." + 0 + ".collwrite.bin";
+        String collReadFileName = MPI.getProcessorName() + ".test." + 0 + ".collread.bin";
+        try (FileChannel collWriteFc = FileChannel
+                .open(Paths.get(mmapScratchDir, collWriteFileName),
                         StandardOpenOption.CREATE, StandardOpenOption.READ,
-                        StandardOpenOption.WRITE)) {
+                        StandardOpenOption.WRITE);
+             FileChannel collReadFc = FileChannel
+                     .open(Paths.get(mmapScratchDir, collReadFileName),
+                             StandardOpenOption.CREATE, StandardOpenOption.READ,
+                             StandardOpenOption.WRITE)) {
 
-            int ZmmapCollectiveReadByteExtent = 2*size*Integer.BYTES;
+            int collWriteByteExtent = 2*Integer.BYTES;
+            int collReadByteExtent = 2*size*Integer.BYTES;
 
-            long mmapCollectiveReadByteOffset = 0L;
 
-            readBytes = ByteBufferBytes.wrap(ZmmapCollectiveFc.map(
-                    FileChannel.MapMode.READ_WRITE, mmapCollectiveReadByteOffset,
-                    ZmmapCollectiveReadByteExtent));
-            /*readByteBuffer = readBytes.sliceAsByteBuffer(readByteBuffer);*/
-            readByteBuffer = MPI.newByteBuffer(ZmmapCollectiveReadByteExtent);
+            readBytes = ByteBufferBytes.wrap(collReadFc.map(
+                    FileChannel.MapMode.READ_WRITE, 0L,
+                    collReadByteExtent));
+            readByteBuffer = readBytes.sliceAsByteBuffer(readByteBuffer);
+
+            writeBytes = ByteBufferBytes.wrap(collWriteFc.map(
+                    FileChannel.MapMode.READ_WRITE, 0L,
+                    collReadByteExtent));
+            writeByteBuffer = writeBytes.sliceAsByteBuffer(writeByteBuffer);
         }
 
 
@@ -56,16 +67,13 @@ public class InterProcComm {
             }
         }*/
 
-        readByteBuffer.putInt(0, rank);
-        readByteBuffer.putInt(Integer.BYTES, 53);
+        writeBytes.writeInt(0, rank);
+        writeBytes.writeInt(Integer.BYTES, 53);
 
-        ByteBuffer recv = MPI.newByteBuffer(size*2*Integer.BYTES);
-
-//        comm.allGather(readByteBuffer, 2*Integer.BYTES, MPI.BYTE, recv, 2*Integer.BYTES, MPI.BYTE);
-        comm.allGather(readByteBuffer, 2*Integer.BYTES, MPI.BYTE);
+        comm.allGather(writeByteBuffer, 2*Integer.BYTES, MPI.BYTE, readByteBuffer, 2*Integer.BYTES, MPI.BYTE);
         if (rank == 13){
             for (int i = 0; i < size; ++i){
-                System.out.println("-- " + recv.getInt(2*i*Integer.BYTES) + " " +recv.getInt((2*i+1)*Integer.BYTES));
+                System.out.println("-- " + readBytes.readInt(2*i*Integer.BYTES) + " " + readBytes.readInt((2*i+1)*Integer.BYTES));
             }
         }
         comm.barrier();
