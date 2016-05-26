@@ -38,8 +38,8 @@ public class InterProcComm {
 
 
 
-        readByteBuffer.putInt(2*rank*Integer.BYTES, rank);
-        readByteBuffer.putInt((2*rank+1)*Integer.BYTES, 53);
+        readBytes.writeInt(2*rank*Integer.BYTES, rank);
+        readBytes.writeInt((2*rank+1)*Integer.BYTES, 53);
 
         /*readBytes.writeInt(2 * rank * Integer.BYTES, rank);
             readBytes.writeInt((2 * rank + 1) * Integer.BYTES, 53);
