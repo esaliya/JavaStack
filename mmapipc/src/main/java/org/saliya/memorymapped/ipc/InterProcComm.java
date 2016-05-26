@@ -38,16 +38,10 @@ public class InterProcComm {
 
 
 
-        readBytes.writeInt(2*rank*Integer.BYTES, rank);
+        /* reading through Bytes work, but using readByteBuffer.get methods
+        *  won't show that consistency */
+        /*readBytes.writeInt(2*rank*Integer.BYTES, rank);
         readBytes.writeInt((2*rank+1)*Integer.BYTES, 53);
-
-        /*readBytes.writeInt(2 * rank * Integer.BYTES, rank);
-            readBytes.writeInt((2 * rank + 1) * Integer.BYTES, 53);
-
-            System.out.println("@@ Rank " + rank + " r fromBytes " +
-                    readBytes.readInt(2 * rank * Integer.BYTES) +
-                    " r fromBuffer " +
-                    readByteBuffer.getInt(2 * rank * Integer.BYTES));*/
 
         comm.barrier();
         if (rank == 3) {
@@ -58,7 +52,18 @@ public class InterProcComm {
                                 readBytes.readInt((2 * i + 1) * Integer.BYTES));
 
             }
+        }*/
+
+        readByteBuffer.putInt(0, rank);
+        readByteBuffer.putInt(Integer.BYTES, 53);
+
+        comm.allGather(readByteBuffer, 2*Integer.BYTES, MPI.BYTE);
+        if (rank == 13){
+            for (int i = 0; i < size; ++i){
+                System.out.println("-- " + readByteBuffer.getInt(2*i*Integer.BYTES) + " " +readByteBuffer.getInt((2*i+1)*Integer.BYTES));
+            }
         }
+        comm.barrier();
 
         MPI.Finalize();
     }
