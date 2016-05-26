@@ -47,8 +47,10 @@ public class InterProcComm {
         readBytes.writeInt(2*rank*Integer.BYTES, rank);
         readBytes.writeInt((2*rank+1)*Integer.BYTES, 53);
 
+        System.out.println("@@ Rank " + rank + " r fromBytes " + readBytes.readInt(2*rank*Integer.BYTES) + " r fromBuffer " + readByteBuffer.getInt(2*rank*Integer.BYTES));
+
         comm.barrier();
-        if (rank == 3) {
+        /*if (rank == 3) {
             for (int i = 0; i < size; ++i) {
                 System.out.println(
                         "++ r " + readBytes.readInt(2 * i * Integer.BYTES) +
@@ -60,7 +62,7 @@ public class InterProcComm {
                                 (2 * i + 1) * Integer.BYTES));
 
             }
-        }
+        }*/
 
         MPI.Finalize();
     }
