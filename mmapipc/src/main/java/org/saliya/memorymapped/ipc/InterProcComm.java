@@ -60,16 +60,9 @@ public class InterProcComm {
         readByteBuffer.putInt(Integer.BYTES, 53);
 
         ByteBuffer recv = MPI.newByteBuffer(size*2*Integer.BYTES);
-        int [] recvCounts = new int[size];
-        int [] displas = new int[size];
-        for (int i = 0; i < size; ++i){
-            recvCounts[i] = 2*Integer.BYTES;
-        }
-        System.arraycopy(recvCounts, 0, displas, 1, size - 1);
-        Arrays.parallelPrefix(displas, (m, n) -> m + n);
 
-//        comm.allGatherv(readByteBuffer, 2*Integer.BYTES, MPI.BYTE, recv, recvCounts, displas, MPI.BYTE);
-        comm.allGather(readByteBuffer, 2*Integer.BYTES, MPI.BYTE, recv, 2*Integer.BYTES, MPI.BYTE);
+//        comm.allGather(readByteBuffer, 2*Integer.BYTES, MPI.BYTE, recv, 2*Integer.BYTES, MPI.BYTE);
+        comm.allGather(readByteBuffer, 2*Integer.BYTES, MPI.BYTE);
         if (rank == 13){
             for (int i = 0; i < size; ++i){
                 System.out.println("-- " + recv.getInt(2*i*Integer.BYTES) + " " +recv.getInt((2*i+1)*Integer.BYTES));
