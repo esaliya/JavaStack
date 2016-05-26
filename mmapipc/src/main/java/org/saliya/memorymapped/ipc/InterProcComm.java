@@ -33,10 +33,8 @@ public class InterProcComm {
             readBytes = ByteBufferBytes.wrap(ZmmapCollectiveFc.map(
                     FileChannel.MapMode.READ_WRITE, mmapCollectiveReadByteOffset,
                     ZmmapCollectiveReadByteExtent));
-            readByteBuffer = readBytes.sliceAsByteBuffer(
-                    null);
-
             readBytes.position(0);
+            readByteBuffer = readBytes.sliceAsByteBuffer(readByteBuffer);
 
             /*if (isMmapLead){
                 for (int i = 0; i < ZmmapCollectiveReadByteExtent; ++i)
@@ -51,9 +49,17 @@ public class InterProcComm {
 
         comm.barrier();
         if (rank == 3) {
-            for (int i = 0; i < size; ++i)
-//            System.out.println("** r " + readBytes.readInt(2*i*Integer.BYTES) + " v " + readBytes.readInt((2*i+1)*Integer.BYTES));
-            System.out.println("** r " + readByteBuffer.getInt(2*i*Integer.BYTES) + " v " + readByteBuffer.getInt((2*i+1)*Integer.BYTES));
+            for (int i = 0; i < size; ++i) {
+                System.out.println(
+                        "++ r " + readBytes.readInt(2 * i * Integer.BYTES) +
+                                " v " +
+                                readBytes.readInt((2 * i + 1) * Integer.BYTES) +
+
+                                "** r " + readByteBuffer.getInt(2 * i * Integer.BYTES) +
+                                " v " + readByteBuffer.getInt(
+                                (2 * i + 1) * Integer.BYTES));
+
+            }
         }
 
         MPI.Finalize();
