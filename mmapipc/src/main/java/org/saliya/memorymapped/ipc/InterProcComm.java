@@ -44,11 +44,16 @@ public class InterProcComm {
 
 
 
-        readBytes.writeInt(2*rank*Integer.BYTES, rank);
-        readBytes.writeInt((2*rank+1)*Integer.BYTES, 53);
+        if (rank == 3) {
+            readBytes.writeInt(2 * rank * Integer.BYTES, rank);
+            readBytes.writeInt((2 * rank + 1) * Integer.BYTES, 53);
 
-        System.out.println("@@ Rank " + rank + " r fromBytes " + readBytes.readInt(2*rank*Integer.BYTES) + " r fromBuffer " + readByteBuffer.getInt(2*rank*Integer.BYTES));
+            System.out.println("@@ Rank " + rank + " r fromBytes " +
+                    readBytes.readInt(2 * rank * Integer.BYTES) +
+                    " r fromBuffer " +
+                    readByteBuffer.getInt(2 * rank * Integer.BYTES));
 
+        }
         comm.barrier();
         /*if (rank == 3) {
             for (int i = 0; i < size; ++i) {
