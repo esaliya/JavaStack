@@ -256,16 +256,16 @@ public class Program
             }
             print(
                 "    Done in " + itrCount + " iterations and " +
-                times[2] * 1.0 / ParallelOptions.size + " ms on average");
+                times[2] * 1.0 / ParallelOptions.size + " ms on average (across all MPI)");
             if (ParallelOptions.size > 1)
             {
                 print(
                     "    Avg. comm time " +
                     times[1] * 1.0 / ParallelOptions.size +
-                    " ms");
+                    " ms (across all MPI)");
                 print(
                     "    Avg. comm time w/ copy " +
-                    times[0] * 1.0 / ParallelOptions.size + " ms");
+                    times[0] * 1.0 / ParallelOptions.size + " ms (across all MPI)");
             }
 
             if (!Strings.isNullOrEmpty(outputFile))
