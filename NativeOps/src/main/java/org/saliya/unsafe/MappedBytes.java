@@ -1,5 +1,6 @@
 package org.saliya.unsafe;
 
+import com.google.common.base.Stopwatch;
 import net.openhft.lang.io.ByteBufferBytes;
 import net.openhft.lang.io.Bytes;
 
@@ -8,17 +9,18 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.concurrent.TimeUnit;
 
 public class MappedBytes {
     static Bytes mmapCollectiveBytes;
     static ByteBuffer mmapCollectiveByteBuffer;
     public static void main(String[] args) {
-        int minMsgSize = 2*Integer.BYTES;
-        int maxMsgSize = 4*Integer.BYTES;
+        int minMsgSize = 2<<20;
+        int maxMsgSize = 2<<20;
 
         String mmapCollectiveFileName = "mmapId.mmapCollective.bin";
         try (FileChannel mmapCollectiveFc = FileChannel
-                .open(Paths.get("/dev/shm/sekanaya", mmapCollectiveFileName),
+                .open(Paths.get(".", mmapCollectiveFileName),
                         StandardOpenOption.CREATE, StandardOpenOption.READ,
                         StandardOpenOption.WRITE)) {
 
@@ -29,21 +31,19 @@ public class MappedBytes {
             e.printStackTrace();
         }
 
-        mmapCollectiveBytes.writeInt(0, 4);
-        mmapCollectiveBytes.writeInt(Integer.BYTES, 5);
-        mmapCollectiveBytes.writeInt(2*Integer.BYTES, 6);
-        mmapCollectiveBytes.writeInt(3*Integer.BYTES, 7);
-        System.out.println(mmapCollectiveBytes.readInt(0));
-        System.out.println(mmapCollectiveBytes.readInt(Integer.BYTES));
-        System.out.println(mmapCollectiveBytes.readInt(2*Integer.BYTES));
-        System.out.println(mmapCollectiveBytes.readInt(3*Integer.BYTES));
-
-        ByteBuffer buffer = ByteBuffer.allocateDirect(maxMsgSize);
+        for (int i = 0; i < maxMsgSize; ++i) {
+            mmapCollectiveBytes.writeByte(i, (byte)'a');
+        }
+        ByteBuffer buffer = ByteBuffer.allocateDirect(minMsgSize);
         buffer.position(0);
         mmapCollectiveBytes.position(0);
+        Stopwatch timer = Stopwatch.createStarted();
         mmapCollectiveBytes.read(buffer, minMsgSize);
-
-        System.out.println(buffer.getInt(0) +  " "  + buffer.getInt(Integer.BYTES));
+        timer.stop();
+        System.out.println(timer.elapsed(TimeUnit.NANOSECONDS));
+        /*for (int i = 0; i < minMsgSize; ++i){
+            System.out.println((char)buffer.get(i));
+        }*/
 
     }
 }
