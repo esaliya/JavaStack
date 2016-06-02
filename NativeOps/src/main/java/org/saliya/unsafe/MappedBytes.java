@@ -18,7 +18,7 @@ public class MappedBytes {
 
         String mmapCollectiveFileName = "mmapId.mmapCollective.bin";
         try (FileChannel mmapCollectiveFc = FileChannel
-                .open(Paths.get(".", mmapCollectiveFileName),
+                .open(Paths.get("/dev/shm/sekanaya", mmapCollectiveFileName),
                         StandardOpenOption.CREATE, StandardOpenOption.READ,
                         StandardOpenOption.WRITE)) {
 
