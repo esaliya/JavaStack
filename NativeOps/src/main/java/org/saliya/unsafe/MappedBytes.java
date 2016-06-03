@@ -39,6 +39,7 @@ public class MappedBytes {
         mmapCollectiveBytes.position(0);
         Stopwatch timer = Stopwatch.createStarted();
         mmapCollectiveBytes.read(buffer, minMsgSize);
+
         timer.stop();
         System.out.println(timer.elapsed(TimeUnit.NANOSECONDS));
         /*for (int i = 0; i < minMsgSize; ++i){

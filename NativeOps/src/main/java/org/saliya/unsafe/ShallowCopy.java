@@ -1,18 +1,25 @@
 package org.saliya.unsafe;
 
 
+import com.google.common.base.Stopwatch;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 
 public class ShallowCopy {
     public static void main(String[] args) {
-        IntBuffer buffer = IntBuffer.allocate(2);
-        buffer.put(0,1);
-        buffer.put(1,4);
+        int masgSize = 2<<20;
+        ByteBuffer buffer = ByteBuffer.allocateDirect(masgSize);
+        buffer.position(0);
+        for (int i = 0; i < masgSize; ++i) {
+            buffer.put((byte)'a');
+        }
+        System.out.println("Start here");
         System.out.println(buffer.get(0) + " " + buffer.get(1));
         long size = sizeOf(buffer);
         System.out.println(size);
@@ -24,7 +31,12 @@ public class ShallowCopy {
         System.out.println(start);
         long address = Common.UNSAFE.allocateMemory(size);
 
+        Stopwatch timer = Stopwatch.createStarted();
         Common.UNSAFE.copyMemory(start, address, size);
+        timer.stop();
+        ByteBuffer b = (ByteBuffer)fromAddress(address);
+        System.out.println((char)b.get(0));
+        System.out.println(timer.elapsed(TimeUnit.NANOSECONDS));
     }
 
     static long toAddress(Object obj) {
