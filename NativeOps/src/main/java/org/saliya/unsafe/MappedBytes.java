@@ -15,8 +15,7 @@ public class MappedBytes {
     static Bytes mmapCollectiveBytes;
     static ByteBuffer mmapCollectiveByteBuffer;
     public static void main(String[] args) {
-        int minMsgSize = 2<<20;
-        int maxMsgSize = 2<<20;
+        int extent = 2<<20;
 
         String mmapCollectiveFileName = "mmapId.mmapCollective.bin";
         try (FileChannel mmapCollectiveFc = FileChannel
@@ -25,21 +24,20 @@ public class MappedBytes {
                         StandardOpenOption.WRITE)) {
 
             mmapCollectiveBytes = ByteBufferBytes.wrap(mmapCollectiveFc.map(
-                    FileChannel.MapMode.READ_WRITE, 0L, maxMsgSize));
+                    FileChannel.MapMode.READ_WRITE, 0L, extent));
             mmapCollectiveByteBuffer = mmapCollectiveBytes.sliceAsByteBuffer(null);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        for (int i = 0; i < maxMsgSize; ++i) {
+        for (int i = 0; i < extent; ++i) {
             mmapCollectiveBytes.writeByte(i, (byte)'a');
         }
-        ByteBuffer buffer = ByteBuffer.allocateDirect(minMsgSize);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(extent);
         buffer.position(0);
         mmapCollectiveBytes.position(0);
         Stopwatch timer = Stopwatch.createStarted();
-        mmapCollectiveBytes.read(buffer, minMsgSize);
-
+        mmapCollectiveBytes.read(buffer, extent);
         timer.stop();
         System.out.println(timer.elapsed(TimeUnit.NANOSECONDS));
         /*for (int i = 0; i < minMsgSize; ++i){
