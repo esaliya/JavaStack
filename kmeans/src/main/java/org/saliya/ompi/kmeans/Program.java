@@ -140,7 +140,7 @@ public class Program {
                         for (int i = 0; i < threadLocalMyNumVec; ++i) {
                             double[] point = points[i + threadLocalVecStartIdx];
                             int dMinIdx = findCenterWithMinDistance(point, immutableCenters);
-                            if (finalItrCount ==1){
+                            if (finalItrCount ==2){
                                 System.out.println("point " + i  + " closest center "  +dMinIdx);
                             }
                             ++pointsPerCenterForThread[threadIndex][dMinIdx];
