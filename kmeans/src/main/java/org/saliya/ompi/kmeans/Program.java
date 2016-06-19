@@ -181,16 +181,7 @@ public class Program {
                     commTimer.reset();
                 }
 
-                // TODO - debugs
-                if (itrCount == 1) {
-                    for (int c = 0; c < numCenters; ++c) {
-                        System.out.print(c);
-                        for (int d = 0; d < numDimensions; ++d) {
-                            System.out.print("  " + centerSumsForThread[0][c][d]);
-                        }
-                        System.out.println("  " + pointsPerCenterForThread[0][c]);
-                    }
-                }
+
 
                 converged = true;
                 for (int i = 0; i < numCenters; ++i) {
@@ -204,6 +195,18 @@ public class Program {
                         converged = false;
                     }
                 }
+
+                // TODO - debugs
+                if (itrCount == 1) {
+                    for (int c = 0; c < numCenters; ++c) {
+                        System.out.print(c);
+                        for (int d = 0; d < numDimensions; ++d) {
+                            System.out.print("  " + centerSumsForThread[0][c][d]);
+                        }
+                        System.out.println("  " + pointsPerCenterForThread[0][c]);
+                    }
+                }
+
                 // Swap original center with centerSumsForThread[0],
                 // which now contains the updated centers. The swapping
                 // will NOT introduce even though centerSumsForThread[0] is
