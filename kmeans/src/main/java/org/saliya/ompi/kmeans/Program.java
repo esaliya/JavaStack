@@ -141,9 +141,9 @@ public class Program {
                             double[] point = points[i + threadLocalVecStartIdx];
                             int dMinIdx = findCenterWithMinDistance(point, immutableCenters);
                             // TODO - debugs
-                            if (finalItrCount ==1 && (ParallelOptions.size > 1 ? ParallelOptions.rank == 1 : ParallelOptions.rank == 0)){
+                            /*if (finalItrCount ==1 && (ParallelOptions.size > 1 ? ParallelOptions.rank == 1 : ParallelOptions.rank == 0)){
                                 System.out.println("point " + i  + " closest center "  +dMinIdx);
-                            }
+                            }*/
                             ++pointsPerCenterForThread[threadIndex][dMinIdx];
                             accumulate(point, centerSumsForThread[threadIndex], dMinIdx);
                             clusterAssignments[i + threadLocalVecStartIdx] = dMinIdx;
@@ -159,6 +159,18 @@ public class Program {
                         for (int d = 0; d < numDimensions; ++d) {
                             centerSumsForThread[0][c][d] += centerSumsForThread[i][c][d];
                         }
+                    }
+                }
+
+                // TODO - debugs
+                if (itrCount == 1 && (ParallelOptions.size > 1 ? ParallelOptions.rank == 1 : ParallelOptions.rank == 0)) {
+                    System.out.println("-- before collective");
+                    for (int c = 0; c < numCenters; ++c) {
+                        System.out.print(c);
+                        for (int d = 0; d < numDimensions; ++d) {
+                            System.out.print("  " + centerSumsForThread[0][c][d]);
+                        }
+                        System.out.println("  " + pointsPerCenterForThread[0][c]);
                     }
                 }
 
