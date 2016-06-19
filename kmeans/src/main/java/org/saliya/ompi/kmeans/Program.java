@@ -180,11 +180,11 @@ public class Program {
                     commTimerWithCopy.reset();
                     commTimer.reset();
                 }
-                
+
                 // TODO - debugs
                 for (int c = 0; c < numCenters; ++c){
                     for (int d = 0; d < numDimensions; ++d) {
-                        System.out.println(c + "  " + centerSumsForThread[0][c][d]);
+                        System.out.print(c + "  " + centerSumsForThread[0][c][d]);
                     }
                     System.out.println(pointsPerCenterForThread[0][c]);
                 }
