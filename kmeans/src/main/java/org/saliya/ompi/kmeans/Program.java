@@ -182,11 +182,13 @@ public class Program {
                 }
 
                 // TODO - debugs
-                for (int c = 0; c < numCenters; ++c){
-                    for (int d = 0; d < numDimensions; ++d) {
-                        System.out.print(c + "  " + centerSumsForThread[0][c][d]);
+                if (itrCount == 1) {
+                    for (int c = 0; c < numCenters; ++c) {
+                        for (int d = 0; d < numDimensions; ++d) {
+                            System.out.print(c + "  " + centerSumsForThread[0][c][d]);
+                        }
+                        System.out.println(pointsPerCenterForThread[0][c]);
                     }
-                    System.out.println(pointsPerCenterForThread[0][c]);
                 }
 
                 converged = true;
