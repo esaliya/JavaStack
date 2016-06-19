@@ -197,7 +197,7 @@ public class Program {
                 }
 
                 // TODO - debugs
-                if (itrCount == 1 && ParallelOptions.rank == 1) {
+                if (itrCount == 1 && (ParallelOptions.size > 1 ? ParallelOptions.rank == 1 : ParallelOptions.rank == 0)) {
                     for (int c = 0; c < numCenters; ++c) {
                         System.out.print(c);
                         for (int d = 0; d < numDimensions; ++d) {
