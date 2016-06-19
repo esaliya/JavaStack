@@ -131,6 +131,7 @@ public class Program {
                 resetPointsPerCenter(pointsPerCenterForThread);
 
                 final double[][] immutableCenters = centers;
+                final int finalItrCount = itrCount;
                 launchHabaneroApp(() -> {
                     forallChunked(0, numThreads - 1, (threadIndex) -> {
                         int threadLocalMyNumVec = ParallelOptions.myNumVecForThread[threadIndex];
@@ -139,6 +140,9 @@ public class Program {
                         for (int i = 0; i < threadLocalMyNumVec; ++i) {
                             double[] point = points[i + threadLocalVecStartIdx];
                             int dMinIdx = findCenterWithMinDistance(point, immutableCenters);
+                            if (finalItrCount ==0){
+                                System.out.println("point " + i  + " closest center "  +dMinIdx);
+                            }
                             ++pointsPerCenterForThread[threadIndex][dMinIdx];
                             accumulate(point, centerSumsForThread[threadIndex], dMinIdx);
                             clusterAssignments[i + threadLocalVecStartIdx] = dMinIdx;
