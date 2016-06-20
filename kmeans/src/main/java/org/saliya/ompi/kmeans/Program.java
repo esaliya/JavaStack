@@ -141,19 +141,34 @@ public class Program {
                             double[] point = points[i + threadLocalVecStartIdx];
                             int dMinIdx = findCenterWithMinDistance(point, immutableCenters);
                             // TODO - debugs
-                            if (finalItrCount ==1 &&
+                            /*if (finalItrCount ==1 &&
                                     (ParallelOptions.size > 1 ? ParallelOptions.rank == 1 : ParallelOptions.rank == 0) &&
                                     (numThreads > 1 ? threadIndex == 1 : threadIndex == 0)){
                                 System.out.println(
                                         "Rank: " + ParallelOptions.rank + " threadIdx: " + threadIndex + " point " + i +
                                                 " closest center " + dMinIdx);
-                            }
+                            }*/
                             ++pointsPerCenterForThread[threadIndex][dMinIdx];
                             accumulate(point, centerSumsForThread[threadIndex], dMinIdx);
                             clusterAssignments[i + threadLocalVecStartIdx] = dMinIdx;
                         }
                     });
                 });
+
+                // TODO - debugs
+                if (itrCount == 1 && (ParallelOptions.size > 1 ? ParallelOptions.rank == 1 : ParallelOptions.rank == 0)) {
+                    System.out.println("** Rank: " + ParallelOptions.rank + " before sum over threads");
+                    for (int t = 0; t < numThreads; ++t) {
+                        System.out.println("T:" + t);
+                        for (int c = 0; c < numCenters; ++c) {
+                            System.out.print("  C:" + c);
+                            for (int d = 0; d < numDimensions; ++d) {
+                                System.out.print("  " + centerSumsForThread[t][c][d]);
+                            }
+                            System.out.println("  " + pointsPerCenterForThread[t][c]);
+                        }
+                    }
+                }
 
                 // Sum over threads
                 // Place results to arrays of thread 0
